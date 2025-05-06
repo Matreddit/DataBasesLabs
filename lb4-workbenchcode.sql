@@ -353,7 +353,7 @@ CREATE TABLE Student_has_Discipline (
     ON UPDATE NO ACTION);
 
 
--- goidly filled m:n table
+-- filled m:n table
 INSERT INTO `Student_has_Discipline` (`Student_StudentID`, `Discipline_Discipline ID`)
 VALUES
   (1, 1), 
