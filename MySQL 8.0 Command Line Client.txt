@@ -1,0 +1,997 @@
+Enter password: *******
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 8.0.41 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> list databases
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'list databases' at line 1
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| studentsubjects    |
+| sys                |
+| unik               |
++--------------------+
+6 rows in set (0.01 sec)
+
+mysql> use studentsubjects
+Database changed
+mysql> show tables
+    -> ;
++----------------------------------+
+| Tables_in_studentsubjects        |
++----------------------------------+
+| credit of passing the discipline |
+| discipline                       |
+| discipline_has_specialty         |
+| faculty                          |
+| group                            |
+| phone number                     |
+| specialty                        |
+| student                          |
+| student_has_discipline           |
++----------------------------------+
+9 rows in set (0.01 sec)
+
+mysql> use unik;
+Database changed
+mysql> show tables
+    -> ;
++----------------+
+| Tables_in_unik |
++----------------+
+| faculty        |
++----------------+
+1 row in set (0.00 sec)
+
+mysql> show faculty;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'faculty' at line 1
+mysql> desc faculty;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| FacultyID   | int         | NO   | PRI | NULL    |       |
+| FacultyName | varchar(45) | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> CREATE TABLE Specialty (
+    ->   SpecialtyID INT NOT NULL PRIMARY KEY,
+    ->   SpecialtyName VARCHAR(45),
+    ->   Faculty_FacultyID INT NOT NULL,
+    ->     FOREIGN KEY (Faculty_Faculty ID)
+    ->     REFERENCES Faculty (FacultyID)
+    ->     ON DELETE NO ACTION
+    ->     ON UPDATE NO ACTION);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ID)
+    REFERENCES Faculty (FacultyID)
+    ON DELETE NO ACTION
+    ON UPDATE NO ' at line 5
+mysql> CREATE TABLE Specialty (
+    ->   SpecialtyID INT NOT NULL PRIMARY KEY,
+    ->   SpecialtyName VARCHAR(45),
+    ->   Faculty_FacultyID INT NOT NULL,
+    ->     FOREIGN KEY (Faculty_FacultyID)
+    ->     REFERENCES Faculty (FacultyID)
+    ->     ON DELETE NO ACTION
+    ->     ON UPDATE NO ACTION);
+Query OK, 0 rows affected (0.03 sec)
+
+mysql>
+mysql> show tables;
++----------------+
+| Tables_in_unik |
++----------------+
+| faculty        |
+| specialty      |
++----------------+
+2 rows in set (0.00 sec)
+
+mysql> desc speciality;
+ERROR 1146 (42S02): Table 'unik.speciality' doesn't exist
+mysql> desc specialty;
++-------------------+-------------+------+-----+---------+-------+
+| Field             | Type        | Null | Key | Default | Extra |
++-------------------+-------------+------+-----+---------+-------+
+| SpecialtyID       | int         | NO   | PRI | NULL    |       |
+| SpecialtyName     | varchar(45) | YES  |     | NULL    |       |
+| Faculty_FacultyID | int         | NO   | MUL | NULL    |       |
++-------------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> insert into Faculty(FacultyID, FacultyName) values (1, "FM");
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from faculty;
++-----------+-------------+
+| FacultyID | FacultyName |
++-----------+-------------+
+|         1 | FM          |
++-----------+-------------+
+1 row in set (0.00 sec)
+
+mysql> select * from specialty;
+Empty set (0.00 sec)
+
+mysql> insert into Specialty(SpecialtyID, SpecialtyName, Faculty_FacultyID) values (1, "CS", 1);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from specialty;
++-------------+---------------+-------------------+
+| SpecialtyID | SpecialtyName | Faculty_FacultyID |
++-------------+---------------+-------------------+
+|           1 | CS            |                 1 |
++-------------+---------------+-------------------+
+1 row in set (0.00 sec)
+
+mysql> CREATE TABLE Group (
+    ->   GroupID INT NOT NULL PRIMARY KEY,
+    ->   GroupName VARCHAR(10),
+    ->   Specialty_SpecialtyID INT NOT NULL,
+    ->     FOREIGN KEY (Specialty_SpecialtyID)
+    ->     REFERENCES Specialty (SpecialtyID)
+    ->     ON DELETE NO ACTION
+    ->     ON UPDATE NO ACTION);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'Group (
+  GroupID INT NOT NULL PRIMARY KEY,
+  GroupName VARCHAR(10),
+  Specialty' at line 1
+mysql> CREATE TABLE `Group` (
+    ->   GroupID INT NOT NULL PRIMARY KEY,
+    ->   GroupName VARCHAR(10),
+    ->   Specialty_SpecialtyID INT NOT NULL,
+    ->     FOREIGN KEY (Specialty_SpecialtyID)
+    ->     REFERENCES Specialty (SpecialtyID)
+    ->     ON DELETE NO ACTION
+    ->     ON UPDATE NO ACTION);
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE Student (
+    ->   StudentID INT NOT NULL,
+    ->   `Name` VARCHAR(45),
+    ->   `Phone number` VARCHAR(45),
+    ->   `Home adress` VARCHAR(45),
+    ->   `Record book number` INT,
+    ->   `Birth date` DATE,
+    ->   GroupID INT NOT NULL,
+    ->   PRIMARY KEY (StudentID, GroupID),
+    ->     FOREIGN KEY (GroupID)
+    ->     REFERENCES `Group` (GroupID)
+    ->     ON DELETE NO ACTION
+    ->     ON UPDATE NO ACTION);
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE  `Discipline` (
+    ->   DisciplineID INT NOT NULL PRIMARY KEY,
+    ->   `Discipline name` VARCHAR(45),
+    ->   `Number of hours` INT,
+    ->   `amount of seminar classes` INT,
+    ->   `amount of practical classes` INT,
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 7
+mysql> CREATE TABLE  `Discipline` (
+    ->   DisciplineID INT NOT NULL PRIMARY KEY,
+    ->   `Discipline name` VARCHAR(45),
+    ->   `Number of hours` INT,
+    ->   `amount of seminar classes` INT,
+    ->   `amount of practical classes` INT
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> CREATE TABLE Discipline_has_Specialty (
+    ->   `Discipline_Discipline ID` INT NOT NULL,
+    ->   `Specialty_Specialty ID` INT NOT NULL,
+    ->   PRIMARY KEY (`Specialty_Specialty ID`, `Discipline_Discipline ID`),
+    ->     FOREIGN KEY (`Discipline_Discipline ID`)
+    ->     REFERENCES Discipline (DisciplineID)
+    ->     ON DELETE NO ACTION
+    ->     ON UPDATE NO ACTION,
+    ->     FOREIGN KEY (`Specialty_Specialty ID`)
+    ->     REFERENCES Specialty (SpecialtyID)
+    ->     ON DELETE NO ACTION
+    ->     ON UPDATE NO ACTION);
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE Student_has_Discipline (
+    ->   `Student_StudentID` INT NOT NULL,
+    ->   `Discipline_Discipline ID` INT NOT NULL,
+    ->   PRIMARY KEY (`Student_StudentID`, `Discipline_Discipline ID`),
+    ->     FOREIGN KEY (Student_StudentID)
+    ->     REFERENCES Student (StudentID)
+    ->     ON DELETE NO ACTION
+    ->     ON UPDATE NO ACTION,
+    ->     FOREIGN KEY (`Discipline_Discipline ID`)
+    ->     REFERENCES Discipline (DisciplineID)
+    ->     ON DELETE NO ACTION
+    ->     ON UPDATE NO ACTION);
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE `credit of passing the discipline` (
+    ->   Semester INT NOT NULL,
+    ->   `Student_has_Discipline_Student_StudentID` INT NOT NULL,
+    ->   `Student_has_Discipline_Discipline_Discipline ID` INT NOT NULL,
+    ->   `date of passing` DATE,
+    ->   `mark` INT,
+    ->   `teacher's name` VARCHAR(45),
+    ->   PRIMARY KEY (`Semester`, `Student_has_Discipline_Student_StudentID`, `Student_has_Discipline_Discipline_Discipline ID`),
+    ->     FOREIGN KEY (`Student_has_Discipline_Student_StudentID` , `Student_has_Discipline_Discipline_Discipline ID`)
+    ->     REFERENCES `Student_has_Discipline` (`Student_StudentID` , `Discipline_Discipline ID`)
+    ->     ON DELETE NO ACTION
+    ->     ON UPDATE NO ACTION);
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE `Phone number` (
+    ->   `PhoneID` INT NOT NULL,
+    ->   `phone number` VARCHAR(45),
+    ->   `Student_StudentID` INT NOT NULL,
+    ->   PRIMARY KEY (`PhoneID`, `Student_StudentID`),
+    ->     FOREIGN KEY (`Student_StudentID`)
+    ->     REFERENCES Student (StudentID)
+    ->     ON DELETE NO ACTION
+    ->     ON UPDATE NO ACTION);
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> select * from faculty;
++-----------+-------------+
+| FacultyID | FacultyName |
++-----------+-------------+
+|         1 | FM          |
++-----------+-------------+
+1 row in set (0.00 sec)
+
+mysql> insert into Faculty(FacultyID, FacultyName)
+    -> values
+    ->  (2, "f2")
+    ->  (3, "f3")
+    ->  (4, "f4")
+    ->  (5, "f5");
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(3, "f3")
+ (4, "f4")
+ (5, "f5")' at line 4
+mysql> insert into Faculty(FacultyID, FacultyName)
+    -> values
+    ->  (2, "f2"),
+    ->  (3, "f3"),
+    ->  (4, "f4"),
+    ->  (5, "f5");
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql>
+mysql> select * from faculty;
++-----------+-------------+
+| FacultyID | FacultyName |
++-----------+-------------+
+|         1 | FM          |
+|         2 | f2          |
+|         3 | f3          |
+|         4 | f4          |
+|         5 | f5          |
++-----------+-------------+
+5 rows in set (0.00 sec)
+
+mysql> select * from specialty;
++-------------+---------------+-------------------+
+| SpecialtyID | SpecialtyName | Faculty_FacultyID |
++-------------+---------------+-------------------+
+|           1 | CS            |                 1 |
++-------------+---------------+-------------------+
+1 row in set (0.00 sec)
+
+mysql> insert into Specialty(SpecialtyID, SpecialtyName, Faculty_FacultyID)
+    -> values
+    ->  (2, "s2", 2),
+    ->  (3, "s3", 3),
+    ->  (4, "s4", 4),
+    ->  (5, "s5", 5);
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> select * from specialty;
++-------------+---------------+-------------------+
+| SpecialtyID | SpecialtyName | Faculty_FacultyID |
++-------------+---------------+-------------------+
+|           1 | CS            |                 1 |
+|           2 | s2            |                 2 |
+|           3 | s3            |                 3 |
+|           4 | s4            |                 4 |
+|           5 | s5            |                 5 |
++-------------+---------------+-------------------+
+5 rows in set (0.00 sec)
+
+mysql> insert into Specialty(GroupID, GroupName, Specialty_SpecialtyID)
+    -> values
+    ->  (1, "Group1", 1),
+    ->  (2, "Group2", 2),
+    ->  (3, "Group3", 3),
+    ->  (4, "Group4", 4),
+    ->  (5, "Group5", 5);
+ERROR 1054 (42S22): Unknown column 'GroupID' in 'field list'
+mysql> select * from 'group';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''group'' at line 1
+mysql> show tables;
++----------------------------------+
+| Tables_in_unik                   |
++----------------------------------+
+| credit of passing the discipline |
+| discipline                       |
+| discipline_has_specialty         |
+| faculty                          |
+| group                            |
+| phone number                     |
+| specialty                        |
+| student                          |
+| student_has_discipline           |
++----------------------------------+
+9 rows in set (0.00 sec)
+
+mysql> select * from group;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'group' at line 1
+mysql> select * from `group`;
+Empty set (0.00 sec)
+
+mysql> desk `group`;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'desk `group`' at line 1
+mysql> desc `group`;
++-----------------------+-------------+------+-----+---------+-------+
+| Field                 | Type        | Null | Key | Default | Extra |
++-----------------------+-------------+------+-----+---------+-------+
+| GroupID               | int         | NO   | PRI | NULL    |       |
+| GroupName             | varchar(10) | YES  |     | NULL    |       |
+| Specialty_SpecialtyID | int         | NO   | MUL | NULL    |       |
++-----------------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> insert into Specialty('GroupID', GroupName, Specialty_SpecialtyID)
+    -> values
+    ->  (1, "Group1", 1),
+    ->  (2, "Group2", 2),
+    ->  (3, "Group3", 3),
+    ->  (4, "Group4", 4),
+    ->  (5, "Group5", 5);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''GroupID', GroupName, Specialty_SpecialtyID)
+values
+ (1, "Group1", 1),
+ (2, "Gro' at line 1
+mysql>
+mysql>
+mysql> insert into Specialty(`GroupID`, GroupName, Specialty_SpecialtyID)
+    -> values
+    ->  (1, "Group1", 1),
+    ->  (2, "Group2", 2),
+    ->  (3, "Group3", 3),
+    ->  (4, "Group4", 4),
+    ->  (5, "Group5", 5);
+ERROR 1054 (42S22): Unknown column 'GroupID' in 'field list'
+mysql> INSERT INTO `Group` (`GroupID`, `GroupName`, `Specialty_SpecialtyID`)
+    -> VALUES
+    ->   (1, 'Group1', 1),
+    ->   (2, 'Group2', 2),
+    ->   (3, 'Group3', 3),
+    ->   (4, 'Group4', 4),
+    ->   (5, 'Group5', 5);
+Query OK, 5 rows affected (0.00 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from `group`;
++---------+-----------+-----------------------+
+| GroupID | GroupName | Specialty_SpecialtyID |
++---------+-----------+-----------------------+
+|       1 | Group1    |                     1 |
+|       2 | Group2    |                     2 |
+|       3 | Group3    |                     3 |
+|       4 | Group4    |                     4 |
+|       5 | Group5    |                     5 |
++---------+-----------+-----------------------+
+5 rows in set (0.00 sec)
+
+mysql> INSERT INTO Student (StudentID, `Name`, `Phone number`, `Home adress`, `Record book number`, `Birth date`, `GroupID`)
+    -> VALUES
+    ->   (1, 'Alice Johnson', '555-1234', '123 Elm St, Cityville', 'RB001', '2000-03-15', 1),
+    ->   (2, 'Bob Smith', '555-5678', '456 Oak St, Townsville', 'RB002', '1999-06-20', 2),
+    ->   (3, 'Charlie Brown', '555-8765', '789 Pine St, Villageburg', 'RB003', '2001-02-10', 3),
+    ->   (4, 'Dana White', '555-1122', '321 Maple St, Suburbia', 'RB004', '2000-09-05', 4),
+    ->   (5, 'Eve Green', '555-3344', '654 Birch St, Uptown', 'RB005', '1998-11-30', 2),
+    ->   (6, 'Frank Black', '555-5566', '987 Cedar St, Midtown', 'RB006', '2001-04-25', 1),
+    ->   (7, 'Grace Lee', '555-7788', '159 Willow St, Cityville', 'RB007', '1999-08-19', 3),
+    ->   (8, 'Hank Davis', '555-9900', '753 Spruce St, Townsville', 'RB008', '2000-12-01', 4),
+    ->   (9, 'Ivy Martin', '555-2233', '852 Redwood St, Suburbia', 'RB009', '2001-01-14', 1),
+    ->   (10, 'Jack Miller', '555-4455', '963 Pine St, Villageburg', 'RB010', '1999-07-22', 2),
+    ->   (11, 'Kathy Wilson', '555-6677', '135 Elm St, Uptown', 'RB011', '2000-04-17', 3),
+    ->   (12, 'Leo Moore', '555-8899', '246 Oak St, Midtown', 'RB012', '1998-02-28', 4),
+    ->   (13, 'Mona Harris', '555-1010', '357 Maple St, Cityville', 'RB013', '2001-05-13', 1),
+    ->   (14, 'Nina Clark', '555-2323', '468 Birch St, Townsville', 'RB014', '1999-10-02', 5),
+    ->   (15, 'Oscar Young', '555-4545', '579 Cedar St, Suburbia', 'RB015', '2000-01-22', 3),
+    ->   (16, 'Paul Scott', '555-6767', '680 Willow St, Uptown', 'RB016', '1998-03-10', 4),
+    ->   (17, 'Quincy Adams', '555-8989', '791 Spruce St, Villageburg', 'RB017', '2001-07-18', 1),
+    ->   (18, 'Rita Baker', '555-1011', '902 Redwood St, Midtown', 'RB018', '2000-11-09', 2),
+    ->   (19, 'Steve Allen', '555-3232', '104 Elm St, Cityville', 'RB019', '1999-12-25', 3),
+    ->   (20, 'Tina Moore', '555-5454', '215 Oak St, Townsville', 'RB020', '2001-08-30', 5);
+ERROR 1366 (HY000): Incorrect integer value: 'RB001' for column 'Record book number' at row 1
+mysql>
+mysql> INSERT INTO Student (StudentID, `Name`, `Phone number`, `Home adress`, `Record book number`, `Birth date`, GroupID)
+    -> VALUES
+    ->   (1, 'Alice Johnson', '555-1234', '123 Elm St, Cityville', 101, '2000-03-15', 1),
+    ->   (2, 'Bob Smith', '555-5678', '456 Oak St, Townsville', 102, '1999-06-20', 2),
+    ->   (3, 'Charlie Brown', '555-8765', '789 Pine St, Villageburg', 103, '2001-02-10', 3),
+    ->   (4, 'Dana White', '555-1122', '321 Maple St, Suburbia', 104, '2000-09-05', 4),
+    ->   (5, 'Eve Green', '555-3344', '654 Birch St, Uptown', 105, '1998-11-30', 2),
+    ->   (6, 'Frank Black', '555-5566', '987 Cedar St, Midtown', 106, '2001-04-25', 1),
+    ->   (7, 'Grace Lee', '555-7788', '159 Willow St, Cityville', 107, '1999-08-19', 3),
+    ->   (8, 'Hank Davis', '555-9900', '753 Spruce St, Townsville', 108, '2000-12-01', 4),
+    ->   (9, 'Ivy Martin', '555-2233', '852 Redwood St, Suburbia', 109, '2001-01-14', 1),
+    ->   (10, 'Jack Miller', '555-4455', '963 Pine St, Villageburg', 110, '1999-07-22', 2),
+    ->   (11, 'Kathy Wilson', '555-6677', '135 Elm St, Uptown', 111, '2000-04-17', 3),
+    ->   (12, 'Leo Moore', '555-8899', '246 Oak St, Midtown', 112, '1998-02-28', 4),
+    ->   (13, 'Mona Harris', '555-1010', '357 Maple St, Cityville', 113, '2001-05-13', 1),
+    ->   (14, 'Nina Clark', '555-2323', '468 Birch St, Townsville', 114, '1999-10-02', 2),
+    ->   (15, 'Oscar Young', '555-4545', '579 Cedar St, Suburbia', 115, '2000-01-22', 3),
+    ->   (16, 'Paul Scott', '555-6767', '680 Willow St, Uptown', 116, '1998-03-10', 4),
+    ->   (17, 'Quincy Adams', '555-8989', '791 Spruce St, Villageburg', 117, '2001-07-18', 1),
+    ->   (18, 'Rita Baker', '555-1011', '902 Redwood St, Midtown', 118, '2000-11-09', 2),
+    ->   (19, 'Steve Allen', '555-3232', '104 Elm St, Cityville', 119, '1999-12-25', 5),
+    ->   (20, 'Tina Moore', '555-5454', '215 Oak St, Townsville', 120, '2001-08-30', 3);
+Query OK, 20 rows affected (0.00 sec)
+Records: 20  Duplicates: 0  Warnings: 0
+
+mysql>
+mysql> select * from student;
++-----------+---------------+--------------+----------------------------+--------------------+------------+---------+
+| StudentID | Name          | Phone number | Home adress                | Record book number | Birth date | GroupID |
++-----------+---------------+--------------+----------------------------+--------------------+------------+---------+
+|         1 | Alice Johnson | 555-1234     | 123 Elm St, Cityville      |                101 | 2000-03-15 |       1 |
+|         2 | Bob Smith     | 555-5678     | 456 Oak St, Townsville     |                102 | 1999-06-20 |       2 |
+|         3 | Charlie Brown | 555-8765     | 789 Pine St, Villageburg   |                103 | 2001-02-10 |       3 |
+|         4 | Dana White    | 555-1122     | 321 Maple St, Suburbia     |                104 | 2000-09-05 |       4 |
+|         5 | Eve Green     | 555-3344     | 654 Birch St, Uptown       |                105 | 1998-11-30 |       2 |
+|         6 | Frank Black   | 555-5566     | 987 Cedar St, Midtown      |                106 | 2001-04-25 |       1 |
+|         7 | Grace Lee     | 555-7788     | 159 Willow St, Cityville   |                107 | 1999-08-19 |       3 |
+|         8 | Hank Davis    | 555-9900     | 753 Spruce St, Townsville  |                108 | 2000-12-01 |       4 |
+|         9 | Ivy Martin    | 555-2233     | 852 Redwood St, Suburbia   |                109 | 2001-01-14 |       1 |
+|        10 | Jack Miller   | 555-4455     | 963 Pine St, Villageburg   |                110 | 1999-07-22 |       2 |
+|        11 | Kathy Wilson  | 555-6677     | 135 Elm St, Uptown         |                111 | 2000-04-17 |       3 |
+|        12 | Leo Moore     | 555-8899     | 246 Oak St, Midtown        |                112 | 1998-02-28 |       4 |
+|        13 | Mona Harris   | 555-1010     | 357 Maple St, Cityville    |                113 | 2001-05-13 |       1 |
+|        14 | Nina Clark    | 555-2323     | 468 Birch St, Townsville   |                114 | 1999-10-02 |       2 |
+|        15 | Oscar Young   | 555-4545     | 579 Cedar St, Suburbia     |                115 | 2000-01-22 |       3 |
+|        16 | Paul Scott    | 555-6767     | 680 Willow St, Uptown      |                116 | 1998-03-10 |       4 |
+|        17 | Quincy Adams  | 555-8989     | 791 Spruce St, Villageburg |                117 | 2001-07-18 |       1 |
+|        18 | Rita Baker    | 555-1011     | 902 Redwood St, Midtown    |                118 | 2000-11-09 |       2 |
+|        19 | Steve Allen   | 555-3232     | 104 Elm St, Cityville      |                119 | 1999-12-25 |       5 |
+|        20 | Tina Moore    | 555-5454     | 215 Oak St, Townsville     |                120 | 2001-08-30 |       3 |
++-----------+---------------+--------------+----------------------------+--------------------+------------+---------+
+20 rows in set (0.00 sec)
+
+mysql> INSERT INTO `Discipline` (DisciplineID, `Discipline name`, `Number of hours`, `amount of seminar classes`, `amount of practical classes`)
+    -> VALUES
+    ->   (1, 'Mathematics', 120, 30, 60),
+    ->   (2, 'Physics', 150, 40, 70),
+    ->   (3, 'Chemistry', 100, 25, 50),
+    ->   (4, 'Biology', 110, 30, 55),
+    ->   (5, 'Computer Science', 180, 50, 90),
+    ->   (6, 'English Literature', 90, 25, 45),
+    ->   (7, 'History', 80, 20, 40),
+    ->   (8, 'Philosophy', 75, 20, 35),
+    ->   (9, 'Economics', 130, 35, 65),
+    ->   (10, 'Psychology', 110, 30, 55),
+    ->   (11, 'Sociology', 95, 30, 45),
+    ->   (12, 'Geography', 100, 28, 50),
+    ->   (13, 'Political Science', 120, 32, 60),
+    ->   (14, 'Engineering Mechanics', 150, 40, 70),
+    ->   (15, 'Statistics', 120, 36, 60),
+    ->   (16, 'Environmental Science', 100, 25, 50),
+    ->   (17, 'Business Administration', 110, 30, 55),
+    ->   (18, 'Law', 150, 40, 70),
+    ->   (19, 'Medicine', 200, 55, 100),
+    ->   (20, 'Art History', 75, 20, 35);
+Query OK, 20 rows affected (0.00 sec)
+Records: 20  Duplicates: 0  Warnings: 0
+
+mysql> select * from discipline;
++--------------+-------------------------+-----------------+---------------------------+-----------------------------+
+| DisciplineID | Discipline name         | Number of hours | amount of seminar classes | amount of practical classes |
++--------------+-------------------------+-----------------+---------------------------+-----------------------------+
+|            1 | Mathematics             |             120 |                        30 |                          60 |
+|            2 | Physics                 |             150 |                        40 |                          70 |
+|            3 | Chemistry               |             100 |                        25 |                          50 |
+|            4 | Biology                 |             110 |                        30 |                          55 |
+|            5 | Computer Science        |             180 |                        50 |                          90 |
+|            6 | English Literature      |              90 |                        25 |                          45 |
+|            7 | History                 |              80 |                        20 |                          40 |
+|            8 | Philosophy              |              75 |                        20 |                          35 |
+|            9 | Economics               |             130 |                        35 |                          65 |
+|           10 | Psychology              |             110 |                        30 |                          55 |
+|           11 | Sociology               |              95 |                        30 |                          45 |
+|           12 | Geography               |             100 |                        28 |                          50 |
+|           13 | Political Science       |             120 |                        32 |                          60 |
+|           14 | Engineering Mechanics   |             150 |                        40 |                          70 |
+|           15 | Statistics              |             120 |                        36 |                          60 |
+|           16 | Environmental Science   |             100 |                        25 |                          50 |
+|           17 | Business Administration |             110 |                        30 |                          55 |
+|           18 | Law                     |             150 |                        40 |                          70 |
+|           19 | Medicine                |             200 |                        55 |                         100 |
+|           20 | Art History             |              75 |                        20 |                          35 |
++--------------+-------------------------+-----------------+---------------------------+-----------------------------+
+20 rows in set (0.00 sec)
+
+mysql> select * from specialty;
++-------------+---------------+-------------------+
+| SpecialtyID | SpecialtyName | Faculty_FacultyID |
++-------------+---------------+-------------------+
+|           1 | CS            |                 1 |
+|           2 | s2            |                 2 |
+|           3 | s3            |                 3 |
+|           4 | s4            |                 4 |
+|           5 | s5            |                 5 |
++-------------+---------------+-------------------+
+5 rows in set (0.00 sec)
+
+mysql> INSERT INTO `Discipline_has_Specialty` (`Discipline_Discipline ID`, `Specialty_Specialty ID`)
+    -> VALUES
+    ->   (1, 1),
+    ->   (1, 2),
+    ->   (2, 1),
+    ->   (2, 3),
+    ->   (3, 2),
+    ->   (3, 4),
+    ->   (4, 3),
+    ->   (4, 5),
+    ->   (5, 1),
+    ->   (5, 4),
+    ->   (6, 2),
+    ->   (6, 5),
+    ->   (7, 3),
+    ->   (7, 4),
+    ->   (8, 1),
+    ->   (8, 5),
+    ->   (9, 2),
+    ->   (9, 3),
+    ->   (10, 4),
+    ->   (10, 5),
+    ->   (11, 2),
+    ->   (11, 3),
+    ->   (12, 1),
+    ->   (12, 5),
+    ->   (13, 4),
+    ->   (13, 2),
+    ->   (14, 1),
+    ->   (14, 3),
+    ->   (15, 5),
+    ->   (15, 4),
+    ->   (16, 3),
+    ->   (16, 2),
+    ->   (17, 5),
+    ->   (17, 1),
+    ->   (18, 4),
+    ->   (18, 2),
+    ->   (19, 1),
+    ->   (19, 5),
+    ->   (20, 3);
+Query OK, 39 rows affected (0.00 sec)
+Records: 39  Duplicates: 0  Warnings: 0
+
+mysql> select * from student;
++-----------+---------------+--------------+----------------------------+--------------------+------------+---------+
+| StudentID | Name          | Phone number | Home adress                | Record book number | Birth date | GroupID |
++-----------+---------------+--------------+----------------------------+--------------------+------------+---------+
+|         1 | Alice Johnson | 555-1234     | 123 Elm St, Cityville      |                101 | 2000-03-15 |       1 |
+|         2 | Bob Smith     | 555-5678     | 456 Oak St, Townsville     |                102 | 1999-06-20 |       2 |
+|         3 | Charlie Brown | 555-8765     | 789 Pine St, Villageburg   |                103 | 2001-02-10 |       3 |
+|         4 | Dana White    | 555-1122     | 321 Maple St, Suburbia     |                104 | 2000-09-05 |       4 |
+|         5 | Eve Green     | 555-3344     | 654 Birch St, Uptown       |                105 | 1998-11-30 |       2 |
+|         6 | Frank Black   | 555-5566     | 987 Cedar St, Midtown      |                106 | 2001-04-25 |       1 |
+|         7 | Grace Lee     | 555-7788     | 159 Willow St, Cityville   |                107 | 1999-08-19 |       3 |
+|         8 | Hank Davis    | 555-9900     | 753 Spruce St, Townsville  |                108 | 2000-12-01 |       4 |
+|         9 | Ivy Martin    | 555-2233     | 852 Redwood St, Suburbia   |                109 | 2001-01-14 |       1 |
+|        10 | Jack Miller   | 555-4455     | 963 Pine St, Villageburg   |                110 | 1999-07-22 |       2 |
+|        11 | Kathy Wilson  | 555-6677     | 135 Elm St, Uptown         |                111 | 2000-04-17 |       3 |
+|        12 | Leo Moore     | 555-8899     | 246 Oak St, Midtown        |                112 | 1998-02-28 |       4 |
+|        13 | Mona Harris   | 555-1010     | 357 Maple St, Cityville    |                113 | 2001-05-13 |       1 |
+|        14 | Nina Clark    | 555-2323     | 468 Birch St, Townsville   |                114 | 1999-10-02 |       2 |
+|        15 | Oscar Young   | 555-4545     | 579 Cedar St, Suburbia     |                115 | 2000-01-22 |       3 |
+|        16 | Paul Scott    | 555-6767     | 680 Willow St, Uptown      |                116 | 1998-03-10 |       4 |
+|        17 | Quincy Adams  | 555-8989     | 791 Spruce St, Villageburg |                117 | 2001-07-18 |       1 |
+|        18 | Rita Baker    | 555-1011     | 902 Redwood St, Midtown    |                118 | 2000-11-09 |       2 |
+|        19 | Steve Allen   | 555-3232     | 104 Elm St, Cityville      |                119 | 1999-12-25 |       5 |
+|        20 | Tina Moore    | 555-5454     | 215 Oak St, Townsville     |                120 | 2001-08-30 |       3 |
++-----------+---------------+--------------+----------------------------+--------------------+------------+---------+
+20 rows in set (0.00 sec)
+
+mysql> INSERT INTO `Student_has_Discipline` (`Student_StudentID`, `Discipline_Discipline ID`)
+    -> VALUES
+    ->   (1, 1),
+    ->   (1, 2),
+    ->   (2, 1),
+    ->   (2, 3),
+    ->   (3, 4),
+    ->   (3, 5),
+    ->   (4, 2),
+    ->   (4, 6),
+    ->   (5, 7),
+    ->   (5, 8),
+    ->   (6, 9),
+    ->   (6, 10),
+    ->   (7, 1),
+    ->   (7, 11),
+    ->   (8, 3),
+    ->   (8, 5),
+    ->   (9, 4),
+    ->   (9, 12),
+    ->   (10, 6),
+    ->   (10, 13),
+    ->   (11, 7),
+    ->   (11, 14),
+    ->   (12, 8),
+    ->   (12, 15),
+    ->   (13, 9),
+    ->   (13, 5),
+    ->   (14, 1),
+    ->   (14, 16),
+    ->   (15, 3),
+    ->   (15, 18),
+    ->   (16, 4),
+    ->   (16, 17),
+    ->   (17, 2),
+    ->   (17, 19),
+    ->   (18, 11),
+    ->   (18, 20),
+    ->   (19, 5),
+    ->   (19, 20),
+    ->   (20, 10),
+    ->   (20, 13);
+Query OK, 40 rows affected (0.00 sec)
+Records: 40  Duplicates: 0  Warnings: 0
+
+mysql> show tables
+    -> ;
++----------------------------------+
+| Tables_in_unik                   |
++----------------------------------+
+| credit of passing the discipline |
+| discipline                       |
+| discipline_has_specialty         |
+| faculty                          |
+| group                            |
+| phone number                     |
+| specialty                        |
+| student                          |
+| student_has_discipline           |
++----------------------------------+
+9 rows in set (0.00 sec)
+
+mysql> desc "credit of passing the discipline"
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '"credit of passing the discipline"' at line 1
+mysql> desc `credit of passing the discipline`;
++-------------------------------------------------+-------------+------+-----+---------+-------+
+| Field                                           | Type        | Null | Key | Default | Extra |
++-------------------------------------------------+-------------+------+-----+---------+-------+
+| Semester                                        | int         | NO   | PRI | NULL    |       |
+| Student_has_Discipline_Student_StudentID        | int         | NO   | PRI | NULL    |       |
+| Student_has_Discipline_Discipline_Discipline ID | int         | NO   | PRI | NULL    |       |
+| date of passing                                 | date        | YES  |     | NULL    |       |
+| mark                                            | int         | YES  |     | NULL    |       |
+| teacher's name                                  | varchar(45) | YES  |     | NULL    |       |
++-------------------------------------------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+mysql> INSERT INTO `credit of passing the discipline` (Semester, `Student_has_Discipline_Student_StudentID`, `Student_has_Discipline_Discipline_Discipline ID`, `date of passing`, `mark`, `teacher's name`)
+    -> VALUES
+    ->   (1, 1, 1, '2023-01-15', 85, 'Prof. Williams'),
+    ->   (1, 1, 2, '2023-01-15', 92, 'Dr. Roberts'),
+    ->   (1, 2, 1, '2023-02-20', 78, 'Prof. Williams'),
+    ->   (1, 2, 3, '2023-02-20', 83, 'Dr. Carter'),
+    ->   (1, 3, 4, '2023-03-05', 70, 'Dr. Lee'),
+    ->   (1, 3, 5, '2023-03-05', 88, 'Prof. Scott'),
+    ->   (1, 4, 2, '2023-04-12', 91, 'Dr. Roberts'),
+    ->   (1, 4, 6, '2023-04-12', 94, 'Dr. Green'),
+    ->   (1, 5, 7, '2023-05-01', 85, 'Dr. Jackson'),
+    ->   (1, 5, 8, '2023-05-01', 75, 'Prof. Turner'),
+    ->   (1, 6, 9, '2023-06-10', 80, 'Prof. Harris'),
+    ->   (1, 6, 10, '2023-06-10', 67, 'Dr. Campbell'),
+    ->   (1, 7, 1, '2023-07-15', 90, 'Prof. Williams'),
+    ->   (1, 7, 11, '2023-07-15', 77, 'Dr. Evans'),
+    ->   (2, 8, 3, '2023-09-05', 82, 'Dr. Lee'),
+    ->   (2, 8, 5, '2023-09-05', 79, 'Prof. Scott'),
+    ->   (2, 9, 4, '2023-10-10', 66, 'Dr. Green'),
+    ->   (2, 9, 12, '2023-10-10', 95, 'Prof. Harris'),
+    ->   (2, 10, 6, '2023-11-01', 89, 'Dr. Campbell'),
+    ->   (2, 10, 13, '2023-11-01', 90, 'Dr. Evans'),
+    ->   (2, 11, 7, '2023-12-12', 92, 'Dr. Jackson'),
+    ->   (2, 11, 14, '2023-12-12', 84, 'Prof. Turner'),
+    ->   (2, 12, 8, '2024-01-10', 80, 'Prof. Turner'),
+    ->   (2, 12, 15, '2024-01-10', 78, 'Prof. Harris'),
+    ->   (2, 13, 9, '2024-02-25', 86, 'Dr. Carter'),
+    ->   (2, 13, 5, '2024-02-25', 92, 'Prof. Scott'),
+    ->   (2, 14, 1, '2024-03-15', 72, 'Prof. Williams'),
+    ->   (2, 14, 16, '2024-03-15', 80, 'Dr. Lee'),
+    ->   (3, 15, 3, '2024-04-20', 88, 'Dr. Green'),
+    ->   (3, 15, 18, '2024-04-20', 91, 'Dr. Roberts'),
+    ->   (3, 16, 4, '2024-05-30', 75, 'Prof. Turner'),
+    ->   (3, 16, 17, '2024-05-30', 85, 'Dr. Jackson'),
+    ->   (3, 17, 2, '2024-06-25', 89, 'Dr. Roberts'),
+    ->   (3, 17, 19, '2024-06-25', 90, 'Prof. Harris'),
+    ->   (3, 18, 11, '2024-07-18', 79, 'Dr. Campbell'),
+    ->   (3, 18, 20, '2024-07-18', 91, 'Prof. Williams'),
+    ->   (3, 19, 5, '2024-08-10', 92, 'Prof. Scott'),
+    ->   (3, 19, 20, '2024-08-10', 84, 'Dr. Green'),
+    ->   (3, 20, 10, '2024-09-01', 78, 'Dr. Campbell'),
+    ->   (3, 20, 13, '2024-09-01', 91, 'Dr. Evans');
+Query OK, 40 rows affected (0.00 sec)
+Records: 40  Duplicates: 0  Warnings: 0
+
+mysql> select * from `credit of passing the discipline`;
++----------+------------------------------------------+-------------------------------------------------+-----------------+------+----------------+
+| Semester | Student_has_Discipline_Student_StudentID | Student_has_Discipline_Discipline_Discipline ID | date of passing | mark | teacher's name |
++----------+------------------------------------------+-------------------------------------------------+-----------------+------+----------------+
+|        1 |                                        1 |                                               1 | 2023-01-15      |   85 | Prof. Williams |
+|        1 |                                        1 |                                               2 | 2023-01-15      |   92 | Dr. Roberts    |
+|        1 |                                        2 |                                               1 | 2023-02-20      |   78 | Prof. Williams |
+|        1 |                                        2 |                                               3 | 2023-02-20      |   83 | Dr. Carter     |
+|        1 |                                        3 |                                               4 | 2023-03-05      |   70 | Dr. Lee        |
+|        1 |                                        3 |                                               5 | 2023-03-05      |   88 | Prof. Scott    |
+|        1 |                                        4 |                                               2 | 2023-04-12      |   91 | Dr. Roberts    |
+|        1 |                                        4 |                                               6 | 2023-04-12      |   94 | Dr. Green      |
+|        1 |                                        5 |                                               7 | 2023-05-01      |   85 | Dr. Jackson    |
+|        1 |                                        5 |                                               8 | 2023-05-01      |   75 | Prof. Turner   |
+|        1 |                                        6 |                                               9 | 2023-06-10      |   80 | Prof. Harris   |
+|        1 |                                        6 |                                              10 | 2023-06-10      |   67 | Dr. Campbell   |
+|        1 |                                        7 |                                               1 | 2023-07-15      |   90 | Prof. Williams |
+|        1 |                                        7 |                                              11 | 2023-07-15      |   77 | Dr. Evans      |
+|        2 |                                        8 |                                               3 | 2023-09-05      |   82 | Dr. Lee        |
+|        2 |                                        8 |                                               5 | 2023-09-05      |   79 | Prof. Scott    |
+|        2 |                                        9 |                                               4 | 2023-10-10      |   66 | Dr. Green      |
+|        2 |                                        9 |                                              12 | 2023-10-10      |   95 | Prof. Harris   |
+|        2 |                                       10 |                                               6 | 2023-11-01      |   89 | Dr. Campbell   |
+|        2 |                                       10 |                                              13 | 2023-11-01      |   90 | Dr. Evans      |
+|        2 |                                       11 |                                               7 | 2023-12-12      |   92 | Dr. Jackson    |
+|        2 |                                       11 |                                              14 | 2023-12-12      |   84 | Prof. Turner   |
+|        2 |                                       12 |                                               8 | 2024-01-10      |   80 | Prof. Turner   |
+|        2 |                                       12 |                                              15 | 2024-01-10      |   78 | Prof. Harris   |
+|        2 |                                       13 |                                               5 | 2024-02-25      |   92 | Prof. Scott    |
+|        2 |                                       13 |                                               9 | 2024-02-25      |   86 | Dr. Carter     |
+|        2 |                                       14 |                                               1 | 2024-03-15      |   72 | Prof. Williams |
+|        2 |                                       14 |                                              16 | 2024-03-15      |   80 | Dr. Lee        |
+|        3 |                                       15 |                                               3 | 2024-04-20      |   88 | Dr. Green      |
+|        3 |                                       15 |                                              18 | 2024-04-20      |   91 | Dr. Roberts    |
+|        3 |                                       16 |                                               4 | 2024-05-30      |   75 | Prof. Turner   |
+|        3 |                                       16 |                                              17 | 2024-05-30      |   85 | Dr. Jackson    |
+|        3 |                                       17 |                                               2 | 2024-06-25      |   89 | Dr. Roberts    |
+|        3 |                                       17 |                                              19 | 2024-06-25      |   90 | Prof. Harris   |
+|        3 |                                       18 |                                              11 | 2024-07-18      |   79 | Dr. Campbell   |
+|        3 |                                       18 |                                              20 | 2024-07-18      |   91 | Prof. Williams |
+|        3 |                                       19 |                                               5 | 2024-08-10      |   92 | Prof. Scott    |
+|        3 |                                       19 |                                              20 | 2024-08-10      |   84 | Dr. Green      |
+|        3 |                                       20 |                                              10 | 2024-09-01      |   78 | Dr. Campbell   |
+|        3 |                                       20 |                                              13 | 2024-09-01      |   91 | Dr. Evans      |
++----------+------------------------------------------+-------------------------------------------------+-----------------+------+----------------+
+40 rows in set (0.00 sec)
+
+mysql> INSERT INTO `Phone number` (PhoneID, `phone number`, `Student_StudentID`)
+    -> VALUES
+    ->   (1, '555-1234', 1),
+    ->   (2, '555-5678', 11),
+    ->   (3, '555-5678', 2),
+    ->   (4, '555-8765', 13),
+    ->   (5, '555-1122', 4),
+    ->   (6, '555-3344', 5),
+    ->   (7, '555-5566', 6),
+    ->   (8, '555-7788', 17),
+    ->   (9, '555-9900', 8),
+    ->   (10, '555-2233', 10),
+    ->
+    -> (11, '555-8881', 14);
+Query OK, 11 rows affected (0.00 sec)
+Records: 11  Duplicates: 0  Warnings: 0
+
+mysql> select * from `phone number`;
++---------+--------------+-------------------+
+| PhoneID | phone number | Student_StudentID |
++---------+--------------+-------------------+
+|       1 | 555-1234     |                 1 |
+|       2 | 555-5678     |                11 |
+|       3 | 555-5678     |                 2 |
+|       4 | 555-8765     |                13 |
+|       5 | 555-1122     |                 4 |
+|       6 | 555-3344     |                 5 |
+|       7 | 555-5566     |                 6 |
+|       8 | 555-7788     |                17 |
+|       9 | 555-9900     |                 8 |
+|      10 | 555-2233     |                10 |
+|      11 | 555-8881     |                14 |
++---------+--------------+-------------------+
+11 rows in set (0.00 sec)
+
+mysql> show tables;
++----------------------------------+
+| Tables_in_unik                   |
++----------------------------------+
+| credit of passing the discipline |
+| discipline                       |
+| discipline_has_specialty         |
+| faculty                          |
+| group                            |
+| phone number                     |
+| specialty                        |
+| student                          |
+| student_has_discipline           |
++----------------------------------+
+9 rows in set (0.00 sec)
+
+mysql> desc faculty;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| FacultyID   | int         | NO   | PRI | NULL    |       |
+| FacultyName | varchar(45) | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> select * from faculty;
++-----------+-------------+
+| FacultyID | FacultyName |
++-----------+-------------+
+|         1 | FM          |
+|         2 | f2          |
+|         3 | f3          |
+|         4 | f4          |
+|         5 | f5          |
++-----------+-------------+
+5 rows in set (0.00 sec)
+
+mysql> alter table faculty add column DeanName varchar(45);
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc faculty;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| FacultyID   | int         | NO   | PRI | NULL    |       |
+| FacultyName | varchar(45) | YES  |     | NULL    |       |
+| DeanName    | varchar(45) | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> update faculty set deanname='Arestenko' where facultyid=1;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> update faculty set deanname='Romanenko' where facultyid=2;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> update faculty set deanname='Khomiak' where facultyid=3;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> update faculty set deanname='Kovalenko' where facultyid=4;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> update faculty set deanname='Kravchuk' where facultyid=5;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from faculty;
++-----------+-------------+-----------+
+| FacultyID | FacultyName | DeanName  |
++-----------+-------------+-----------+
+|         1 | FM          | Arestenko |
+|         2 | f2          | Romanenko |
+|         3 | f3          | Khomiak   |
+|         4 | f4          | Kovalenko |
+|         5 | f5          | Kravchuk  |
++-----------+-------------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> alter table faculty change DeanName `Dean`;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+mysql> alter table faculty change DeanName Dean varchar(45);
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> select * from faculty;
++-----------+-------------+-----------+
+| FacultyID | FacultyName | Dean      |
++-----------+-------------+-----------+
+|         1 | FM          | Arestenko |
+|         2 | f2          | Romanenko |
+|         3 | f3          | Khomiak   |
+|         4 | f4          | Kovalenko |
+|         5 | f5          | Kravchuk  |
++-----------+-------------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> alter table faculty modify dean varchar(20);
+Query OK, 5 rows affected (0.03 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> desc faculty;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| FacultyID   | int         | NO   | PRI | NULL    |       |
+| FacultyName | varchar(45) | YES  |     | NULL    |       |
+| dean        | varchar(20) | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> desc student;
++--------------------+-------------+------+-----+---------+-------+
+| Field              | Type        | Null | Key | Default | Extra |
++--------------------+-------------+------+-----+---------+-------+
+| StudentID          | int         | NO   | PRI | NULL    |       |
+| Name               | varchar(45) | YES  |     | NULL    |       |
+| Phone number       | varchar(45) | YES  |     | NULL    |       |
+| Home adress        | varchar(45) | YES  |     | NULL    |       |
+| Record book number | int         | YES  |     | NULL    |       |
+| Birth date         | date        | YES  |     | NULL    |       |
+| GroupID            | int         | NO   | PRI | NULL    |       |
++--------------------+-------------+------+-----+---------+-------+
+7 rows in set (0.00 sec)
+
+mysql> alter table student add column age int;
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc student;
++--------------------+-------------+------+-----+---------+-------+
+| Field              | Type        | Null | Key | Default | Extra |
++--------------------+-------------+------+-----+---------+-------+
+| StudentID          | int         | NO   | PRI | NULL    |       |
+| Name               | varchar(45) | YES  |     | NULL    |       |
+| Phone number       | varchar(45) | YES  |     | NULL    |       |
+| Home adress        | varchar(45) | YES  |     | NULL    |       |
+| Record book number | int         | YES  |     | NULL    |       |
+| Birth date         | date        | YES  |     | NULL    |       |
+| GroupID            | int         | NO   | PRI | NULL    |       |
+| age                | int         | YES  |     | NULL    |       |
++--------------------+-------------+------+-----+---------+-------+
+8 rows in set (0.00 sec)
+
+mysql> update student set age = floor(datediff(curdate(), `Birth date`) / 365.25);
+Query OK, 20 rows affected (0.01 sec)
+Rows matched: 20  Changed: 20  Warnings: 0
+
+mysql> select * from student;
++-----------+---------------+--------------+----------------------------+--------------------+------------+---------+------+
+| StudentID | Name          | Phone number | Home adress                | Record book number | Birth date | GroupID | age  |
++-----------+---------------+--------------+----------------------------+--------------------+------------+---------+------+
+|         1 | Alice Johnson | 555-1234     | 123 Elm St, Cityville      |                101 | 2000-03-15 |       1 |   25 |
+|         2 | Bob Smith     | 555-5678     | 456 Oak St, Townsville     |                102 | 1999-06-20 |       2 |   25 |
+|         3 | Charlie Brown | 555-8765     | 789 Pine St, Villageburg   |                103 | 2001-02-10 |       3 |   24 |
+|         4 | Dana White    | 555-1122     | 321 Maple St, Suburbia     |                104 | 2000-09-05 |       4 |   24 |
+|         5 | Eve Green     | 555-3344     | 654 Birch St, Uptown       |                105 | 1998-11-30 |       2 |   26 |
+|         6 | Frank Black   | 555-5566     | 987 Cedar St, Midtown      |                106 | 2001-04-25 |       1 |   24 |
+|         7 | Grace Lee     | 555-7788     | 159 Willow St, Cityville   |                107 | 1999-08-19 |       3 |   25 |
+|         8 | Hank Davis    | 555-9900     | 753 Spruce St, Townsville  |                108 | 2000-12-01 |       4 |   24 |
+|         9 | Ivy Martin    | 555-2233     | 852 Redwood St, Suburbia   |                109 | 2001-01-14 |       1 |   24 |
+|        10 | Jack Miller   | 555-4455     | 963 Pine St, Villageburg   |                110 | 1999-07-22 |       2 |   25 |
+|        11 | Kathy Wilson  | 555-6677     | 135 Elm St, Uptown         |                111 | 2000-04-17 |       3 |   25 |
+|        12 | Leo Moore     | 555-8899     | 246 Oak St, Midtown        |                112 | 1998-02-28 |       4 |   27 |
+|        13 | Mona Harris   | 555-1010     | 357 Maple St, Cityville    |                113 | 2001-05-13 |       1 |   23 |
+|        14 | Nina Clark    | 555-2323     | 468 Birch St, Townsville   |                114 | 1999-10-02 |       2 |   25 |
+|        15 | Oscar Young   | 555-4545     | 579 Cedar St, Suburbia     |                115 | 2000-01-22 |       3 |   25 |
+|        16 | Paul Scott    | 555-6767     | 680 Willow St, Uptown      |                116 | 1998-03-10 |       4 |   27 |
+|        17 | Quincy Adams  | 555-8989     | 791 Spruce St, Villageburg |                117 | 2001-07-18 |       1 |   23 |
+|        18 | Rita Baker    | 555-1011     | 902 Redwood St, Midtown    |                118 | 2000-11-09 |       2 |   24 |
+|        19 | Steve Allen   | 555-3232     | 104 Elm St, Cityville      |                119 | 1999-12-25 |       5 |   25 |
+|        20 | Tina Moore    | 555-5454     | 215 Oak St, Townsville     |                120 | 2001-08-30 |       3 |   23 |
++-----------+---------------+--------------+----------------------------+--------------------+------------+---------+------+
+20 rows in set (0.00 sec)
+
+mysql>
