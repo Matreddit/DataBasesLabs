@@ -1,0 +1,378 @@
+Enter password: *********
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 10
+Server version: 8.0.41 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use unik;
+Database changed
+mysql> show tables;
++----------------------------------+
+| Tables_in_unik                   |
++----------------------------------+
+| credit of passing the discipline |
+| discipline                       |
+| discipline_has_specialty         |
+| faculty                          |
+| group                            |
+| phone number                     |
+| specialty                        |
+| student                          |
+| student_has_discipline           |
++----------------------------------+
+9 rows in set (0.00 sec)
+
+mysql> desc `credit of passing the discipline`;
++-------------------------------------------------+-------------+------+-----+---------+-------+
+| Field                                           | Type        | Null | Key | Default | Extra |
++-------------------------------------------------+-------------+------+-----+---------+-------+
+| Semester                                        | int         | NO   | PRI | NULL    |       |
+| Student_has_Discipline_Student_StudentID        | int         | NO   | PRI | NULL    |       |
+| Student_has_Discipline_Discipline_Discipline ID | int         | NO   | PRI | NULL    |       |
+| date of passing                                 | date        | YES  |     | NULL    |       |
+| mark                                            | int         | YES  |     | NULL    |       |
+| teacher's name                                  | varchar(45) | YES  |     | NULL    |       |
++-------------------------------------------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+
+mysql> select * from `credit of passing the discipline`;
++----------+------------------------------------------+-------------------------------------------------+-----------------+------+----------------+
+| Semester | Student_has_Discipline_Student_StudentID | Student_has_Discipline_Discipline_Discipline ID | date of passing | mark | teacher's name |
++----------+------------------------------------------+-------------------------------------------------+-----------------+------+----------------+
+|        1 |                                        1 |                                               1 | 2023-01-15      | NULL | Prof. Williams |
+|        1 |                                        1 |                                               2 | 2023-01-15      | NULL | Dr. Roberts    |
+|        1 |                                        2 |                                               1 | 2023-02-20      | NULL | Prof. Williams |
+|        1 |                                        2 |                                               3 | 2023-02-20      |   83 | Dr. Carter     |
+|        1 |                                        3 |                                               4 | 2023-03-05      |   70 | Dr. Lee        |
+|        1 |                                        3 |                                               5 | 2023-03-05      |   88 | Prof. Scott    |
+|        1 |                                        4 |                                               2 | 2023-04-12      | NULL | Dr. Roberts    |
+|        1 |                                        4 |                                               6 | 2023-04-12      |   94 | Dr. Green      |
+|        1 |                                        5 |                                               7 | 2023-05-01      |   85 | Dr. Jackson    |
+|        1 |                                        5 |                                               8 | 2023-05-01      |   75 | Prof. Turner   |
+|        1 |                                        6 |                                               9 | 2023-06-10      |   80 | Prof. Harris   |
+|        1 |                                        6 |                                              10 | 2023-06-10      |   67 | Dr. Campbell   |
+|        1 |                                        7 |                                               1 | 2023-07-15      | NULL | Prof. Williams |
+|        1 |                                        7 |                                              11 | 2023-07-15      |   77 | Dr. Evans      |
+|        2 |                                        8 |                                               3 | 2023-09-05      |   82 | Dr. Lee        |
+|        2 |                                        8 |                                               5 | 2023-09-05      |   79 | Prof. Scott    |
+|        2 |                                        9 |                                               4 | 2023-10-10      |   66 | Dr. Green      |
+|        2 |                                        9 |                                              12 | 2023-10-10      |   95 | Prof. Harris   |
+|        2 |                                       10 |                                               6 | 2023-11-01      |   89 | Dr. Campbell   |
+|        2 |                                       10 |                                              13 | 2023-11-01      |   90 | Dr. Evans      |
+|        2 |                                       11 |                                               7 | 2023-12-12      |   92 | Dr. Jackson    |
+|        2 |                                       11 |                                              14 | 2023-12-12      |   84 | Prof. Turner   |
+|        2 |                                       12 |                                               8 | 2024-01-10      |   80 | Prof. Turner   |
+|        2 |                                       12 |                                              15 | 2024-01-10      |   78 | Prof. Harris   |
+|        2 |                                       13 |                                               5 | 2024-02-25      |   92 | Prof. Scott    |
+|        2 |                                       13 |                                               9 | 2024-02-25      |   86 | Dr. Carter     |
+|        2 |                                       14 |                                               1 | 2024-03-15      |   72 | Prof. Williams |
+|        2 |                                       14 |                                              16 | 2024-03-15      |   80 | Dr. Lee        |
+|        3 |                                       15 |                                               3 | 2024-04-20      |   88 | Dr. Green      |
+|        3 |                                       15 |                                              18 | 2024-04-20      |   91 | Dr. Roberts    |
+|        3 |                                       16 |                                               4 | 2024-05-30      |   75 | Prof. Turner   |
+|        3 |                                       16 |                                              17 | 2024-05-30      |   85 | Dr. Jackson    |
+|        3 |                                       17 |                                               2 | 2024-06-25      |   89 | Dr. Roberts    |
+|        3 |                                       17 |                                              19 | 2024-06-25      |   90 | Prof. Harris   |
+|        3 |                                       18 |                                              11 | 2024-07-18      |   79 | Dr. Campbell   |
+|        3 |                                       18 |                                              20 | 2024-07-18      |   91 | Prof. Williams |
+|        3 |                                       19 |                                               5 | 2024-08-10      |   92 | Prof. Scott    |
+|        3 |                                       19 |                                              20 | 2024-08-10      |   84 | Dr. Green      |
+|        3 |                                       20 |                                              10 | 2024-09-01      |   78 | Dr. Campbell   |
+|        3 |                                       20 |                                              13 | 2024-09-01      |   91 | Dr. Evans      |
++----------+------------------------------------------+-------------------------------------------------+-----------------+------+----------------+
+40 rows in set (0.00 sec)
+
+mysql> desc discipline;
++-----------------------------+-------------+------+-----+---------+-------+
+| Field                       | Type        | Null | Key | Default | Extra |
++-----------------------------+-------------+------+-----+---------+-------+
+| DisciplineID                | int         | NO   | PRI | NULL    |       |
+| Discipline name             | varchar(45) | YES  |     | NULL    |       |
+| Number of hours             | int         | YES  |     | NULL    |       |
+| amount of seminar classes   | int         | YES  |     | NULL    |       |
+| amount of practical classes | int         | YES  |     | NULL    |       |
++-----------------------------+-------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> select * from discipline;
++--------------+-------------------------+-----------------+---------------------------+-----------------------------+
+| DisciplineID | Discipline name         | Number of hours | amount of seminar classes | amount of practical classes |
++--------------+-------------------------+-----------------+---------------------------+-----------------------------+
+|            1 | Mathematics             |             120 |                        30 |                          60 |
+|            2 | Physics                 |             150 |                        40 |                          70 |
+|            3 | Chemistry               |             100 |                        25 |                          50 |
+|            4 | Biology                 |             110 |                        30 |                          55 |
+|            5 | Computer Science        |             180 |                        50 |                          90 |
+|            6 | English Literature      |              90 |                        25 |                          45 |
+|            7 | History                 |              80 |                        20 |                          40 |
+|            8 | Philosophy              |              75 |                        20 |                          35 |
+|            9 | Economics               |             130 |                        35 |                          65 |
+|           10 | Psychology              |             110 |                        30 |                          55 |
+|           11 | Sociology               |              95 |                        30 |                          45 |
+|           12 | Geography               |             100 |                        28 |                          50 |
+|           13 | Political Science       |             120 |                        32 |                          60 |
+|           14 | Engineering Mechanics   |             150 |                        40 |                          70 |
+|           15 | Statistics              |             120 |                        36 |                          60 |
+|           16 | Environmental Science   |             100 |                        25 |                          50 |
+|           17 | Business Administration |             110 |                        30 |                          55 |
+|           18 | Law                     |             150 |                        40 |                          70 |
+|           19 | Medicine                |             200 |                        55 |                         100 |
+|           20 | Art History             |              75 |                        20 |                          35 |
++--------------+-------------------------+-----------------+---------------------------+-----------------------------+
+20 rows in set (0.00 sec)
+
+mysql> desc discipline_has_specialty;
++--------------------------+------+------+-----+---------+-------+
+| Field                    | Type | Null | Key | Default | Extra |
++--------------------------+------+------+-----+---------+-------+
+| Discipline_Discipline ID | int  | NO   | PRI | NULL    |       |
+| Specialty_Specialty ID   | int  | NO   | PRI | NULL    |       |
++--------------------------+------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> select * from discipline_has_specialty;
++--------------------------+------------------------+
+| Discipline_Discipline ID | Specialty_Specialty ID |
++--------------------------+------------------------+
+|                        1 |                      1 |
+|                        1 |                      2 |
+|                        2 |                      1 |
+|                        2 |                      3 |
+|                        3 |                      2 |
+|                        3 |                      4 |
+|                        4 |                      3 |
+|                        4 |                      5 |
+|                        5 |                      1 |
+|                        5 |                      4 |
+|                        6 |                      2 |
+|                        6 |                      5 |
+|                        7 |                      3 |
+|                        7 |                      4 |
+|                        8 |                      1 |
+|                        8 |                      5 |
+|                        9 |                      2 |
+|                        9 |                      3 |
+|                       10 |                      4 |
+|                       10 |                      5 |
+|                       11 |                      2 |
+|                       11 |                      3 |
+|                       12 |                      1 |
+|                       12 |                      5 |
+|                       13 |                      2 |
+|                       13 |                      4 |
+|                       14 |                      1 |
+|                       14 |                      3 |
+|                       15 |                      4 |
+|                       15 |                      5 |
+|                       16 |                      2 |
+|                       16 |                      3 |
+|                       17 |                      1 |
+|                       17 |                      5 |
+|                       18 |                      2 |
+|                       18 |                      4 |
+|                       19 |                      1 |
+|                       19 |                      5 |
+|                       20 |                      3 |
++--------------------------+------------------------+
+39 rows in set (0.00 sec)
+
+mysql> desc faculty;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| FacultyID   | int         | NO   | PRI | NULL    |       |
+| FacultyName | varchar(45) | YES  |     | NULL    |       |
+| dean        | varchar(20) | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> select * from faculty;
++-----------+-------------+-----------+
+| FacultyID | FacultyName | dean      |
++-----------+-------------+-----------+
+|         1 | FM          | Arestenko |
+|         2 | f2          | Romanenko |
+|         3 | f3          | Khomiak   |
+|         4 | f4          | Kovalenko |
+|         5 | f5          | Kravchuk  |
++-----------+-------------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> desc `group`;
++-----------------------+-------------+------+-----+---------+-------+
+| Field                 | Type        | Null | Key | Default | Extra |
++-----------------------+-------------+------+-----+---------+-------+
+| GroupID               | int         | NO   | PRI | NULL    |       |
+| GroupName             | varchar(10) | YES  |     | NULL    |       |
+| Specialty_SpecialtyID | int         | NO   | MUL | NULL    |       |
++-----------------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> select * from `group`;
++---------+-----------+-----------------------+
+| GroupID | GroupName | Specialty_SpecialtyID |
++---------+-----------+-----------------------+
+|       1 | Group1    |                     1 |
+|       2 | Group2    |                     2 |
+|       3 | Group3    |                     3 |
+|       4 | Group4    |                     4 |
+|       5 | Group5    |                     5 |
++---------+-----------+-----------------------+
+5 rows in set (0.00 sec)
+
+mysql> desc `phone number`;
++-------------------+-------------+------+-----+---------+-------+
+| Field             | Type        | Null | Key | Default | Extra |
++-------------------+-------------+------+-----+---------+-------+
+| PhoneID           | int         | NO   | PRI | NULL    |       |
+| phone number      | varchar(45) | YES  |     | NULL    |       |
+| Student_StudentID | int         | NO   | PRI | NULL    |       |
++-------------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> select * from `phone number`;
++---------+--------------+-------------------+
+| PhoneID | phone number | Student_StudentID |
++---------+--------------+-------------------+
+|       1 | 555-1234     |                 1 |
+|       2 | 555-5678     |                11 |
+|       3 | 555-5678     |                 2 |
+|       4 | 555-8765     |                13 |
+|       5 | 555-1122     |                 4 |
+|       6 | 555-3344     |                 5 |
+|       7 | 555-5566     |                 6 |
+|       8 | 555-7788     |                17 |
+|       9 | 555-9900     |                 8 |
+|      10 | 555-2233     |                10 |
+|      11 | 555-8881     |                14 |
++---------+--------------+-------------------+
+11 rows in set (0.00 sec)
+
+mysql> desc specialty;
++-------------------+-------------+------+-----+---------+-------+
+| Field             | Type        | Null | Key | Default | Extra |
++-------------------+-------------+------+-----+---------+-------+
+| SpecialtyID       | int         | NO   | PRI | NULL    |       |
+| SpecialtyName     | varchar(45) | YES  |     | NULL    |       |
+| Faculty_FacultyID | int         | NO   | MUL | NULL    |       |
++-------------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> select * from specialty;
++-------------+---------------+-------------------+
+| SpecialtyID | SpecialtyName | Faculty_FacultyID |
++-------------+---------------+-------------------+
+|           1 | CS            |                 1 |
+|           2 | s2            |                 2 |
+|           3 | s3            |                 3 |
+|           4 | s4            |                 4 |
+|           5 | s5            |                 5 |
++-------------+---------------+-------------------+
+5 rows in set (0.00 sec)
+
+mysql> desc student;
++--------------------+-------------+------+-----+---------+-------+
+| Field              | Type        | Null | Key | Default | Extra |
++--------------------+-------------+------+-----+---------+-------+
+| StudentID          | int         | NO   | PRI | NULL    |       |
+| Name               | varchar(45) | YES  |     | NULL    |       |
+| Phone number       | varchar(45) | YES  |     | NULL    |       |
+| Home adress        | varchar(45) | YES  |     | NULL    |       |
+| Record book number | int         | YES  |     | NULL    |       |
+| Birth date         | date        | YES  |     | NULL    |       |
+| GroupID            | int         | NO   | PRI | NULL    |       |
+| age                | int         | YES  |     | NULL    |       |
++--------------------+-------------+------+-----+---------+-------+
+8 rows in set (0.00 sec)
+
+mysql> select * from student;
++-----------+---------------+--------------+----------------------------+--------------------+------------+---------+------+
+| StudentID | Name          | Phone number | Home adress                | Record book number | Birth date | GroupID | age  |
++-----------+---------------+--------------+----------------------------+--------------------+------------+---------+------+
+|         1 | Alice Johnson | 555-1234     | 123 Elm St, Cityville      |                101 | 2000-03-15 |       1 |   25 |
+|         2 | Bob Smith     | 555-5678     | 456 Oak St, Townsville     |                102 | 1999-06-20 |       2 |   25 |
+|         3 | Charlie Brown | 555-8765     | 789 Pine St, Villageburg   |                103 | 2001-02-10 |       3 |   24 |
+|         4 | Dana White    | 555-1122     | 321 Maple St, Suburbia     |                104 | 2000-09-05 |       4 |   24 |
+|         5 | Eve Green     | 555-3344     | 654 Birch St, Uptown       |                105 | 1998-11-30 |       2 |   26 |
+|         6 | Frank Black   | 555-5566     | 987 Cedar St, Midtown      |                106 | 2001-04-25 |       1 |   24 |
+|         7 | Grace Lee     | 555-7788     | 159 Willow St, Cityville   |                107 | 1999-08-19 |       3 |   25 |
+|         8 | Hank Davis    | 555-9900     | 753 Spruce St, Townsville  |                108 | 2000-12-01 |       4 |   24 |
+|         9 | Ivy Martin    | 555-2233     | 852 Redwood St, Suburbia   |                109 | 2001-01-14 |       1 |   24 |
+|        10 | Jack Miller   | 555-4455     | 963 Pine St, Villageburg   |                110 | 1999-07-22 |       2 |   25 |
+|        11 | Kathy Wilson  | 555-6677     | 135 Elm St, Uptown         |                111 | 2000-04-17 |       3 |   25 |
+|        12 | Leo Moore     | 555-8899     | 246 Oak St, Midtown        |                112 | 1998-02-28 |       4 |   27 |
+|        13 | Mona Harris   | 555-1010     | 357 Maple St, Cityville    |                113 | 2001-05-13 |       1 |   23 |
+|        14 | Nina Clark    | 555-2323     | 468 Birch St, Townsville   |                114 | 1999-10-02 |       2 |   25 |
+|        15 | Oscar Young   | 555-4545     | 579 Cedar St, Suburbia     |                115 | 2000-01-22 |       3 |   25 |
+|        16 | Paul Scott    | 555-6767     | 680 Willow St, Uptown      |                116 | 1998-03-10 |       4 |   27 |
+|        17 | Quincy Adams  | 555-8989     | 791 Spruce St, Villageburg |                117 | 2001-07-18 |       1 |   23 |
+|        18 | Rita Baker    | 555-1011     | 902 Redwood St, Midtown    |                118 | 2000-11-09 |       2 |   24 |
+|        19 | Steve Allen   | 555-3232     | 104 Elm St, Cityville      |                119 | 1999-12-25 |       5 |   25 |
+|        20 | Tina Moore    | 555-5454     | 215 Oak St, Townsville     |                120 | 2001-08-30 |       3 |   23 |
++-----------+---------------+--------------+----------------------------+--------------------+------------+---------+------+
+20 rows in set (0.00 sec)
+
+mysql> desc student_has_discipline;
++--------------------------+------+------+-----+---------+-------+
+| Field                    | Type | Null | Key | Default | Extra |
++--------------------------+------+------+-----+---------+-------+
+| Student_StudentID        | int  | NO   | PRI | NULL    |       |
+| Discipline_Discipline ID | int  | NO   | PRI | NULL    |       |
++--------------------------+------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> select * from student_has_discipline;
++-------------------+--------------------------+
+| Student_StudentID | Discipline_Discipline ID |
++-------------------+--------------------------+
+|                 1 |                        1 |
+|                 2 |                        1 |
+|                 7 |                        1 |
+|                14 |                        1 |
+|                 1 |                        2 |
+|                 4 |                        2 |
+|                17 |                        2 |
+|                 2 |                        3 |
+|                 8 |                        3 |
+|                15 |                        3 |
+|                 3 |                        4 |
+|                 9 |                        4 |
+|                16 |                        4 |
+|                 3 |                        5 |
+|                 8 |                        5 |
+|                13 |                        5 |
+|                19 |                        5 |
+|                 4 |                        6 |
+|                10 |                        6 |
+|                 5 |                        7 |
+|                11 |                        7 |
+|                 5 |                        8 |
+|                12 |                        8 |
+|                 6 |                        9 |
+|                13 |                        9 |
+|                 6 |                       10 |
+|                20 |                       10 |
+|                 7 |                       11 |
+|                18 |                       11 |
+|                 9 |                       12 |
+|                10 |                       13 |
+|                20 |                       13 |
+|                11 |                       14 |
+|                12 |                       15 |
+|                14 |                       16 |
+|                16 |                       17 |
+|                15 |                       18 |
+|                17 |                       19 |
+|                18 |                       20 |
+|                19 |                       20 |
++-------------------+--------------------------+
+40 rows in set (0.00 sec)
+
+mysql>
