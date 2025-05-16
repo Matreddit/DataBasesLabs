@@ -30,7 +30,13 @@ mysql> show tables;
 | tmp_students                     |
 +----------------------------------+
 11 rows in set (0.00 sec)
-
+-------------------------------------------------------------------------------------------------------
+1. Formulate and construct queries with a subquery in the MySQL DBMS:
+a. in the FROM clause;
+1. Сформулювати і сконструювати в СУБД MySQL запити з підзапитом:
+a. у фразі FROM;
+-------------------------------------------------------------------------------------------------------
+-- вивести середні оцінки на студента, але тільки вище 80
 mysql> select name, t2.avg_grd from (
     -> select Student_has_Discipline_Student_StudentID, avg(mark) as avg_grd
     -> from `credit of passing the discipline` group by Student_has_Discipline_Student_StudentID) as t2
@@ -54,6 +60,7 @@ mysql> select name, t2.avg_grd from (
 +--------------+---------+
 12 rows in set (0.00 sec)
 
+-- вивести студентів які старші за середній вік
 mysql> select name, age from student, (
     -> select avg(age) as avg_age from student) as t2
     -> where student.age > t2.avg_age;
@@ -77,6 +84,13 @@ mysql> select name, age from student, (
 mysql>
 mysql>
 mysql>
+-------------------------------------------------------------------------------------------------------
+b. in the WHERE clause using the following operators:
+• EXISTS;
+b. у фразі WHERE з використанням операторів:
+• EXISTS;
+-------------------------------------------------------------------------------------------------------
+-- студент в якого є хоча б одна оцінка
 mysql> select name from student where
     -> exists (select * from `credit of passing the discipline` as t where Student_has_Discipline_Student_StudentID = studentid);
 +---------------+
@@ -105,6 +119,7 @@ mysql> select name from student where
 +---------------+
 20 rows in set (0.00 sec)
 
+-- студент який записаних хоча б на одну дисципліну. (замість select 1 можна * але оскільки нам треба не саме значення, а лише факт що підзапит повертає рядок)
 mysql> select name from student where exists
     -> (select 1 from student_has_discipline where Student_StudentID = studentid);
 +---------------+
@@ -136,6 +151,10 @@ mysql> select name from student where exists
 mysql>
 mysql>
 mysql>
+-------------------------------------------------------------------------------------------------------
+• IN;
+-------------------------------------------------------------------------------------------------------
+-- всі в кого є дисципліна з id = 1
 mysql> select name from student where studentid in (
     -> select student_studentid from student_has_discipline where `Discipline_Discipline ID` = 1 );
 +---------------+
@@ -148,6 +167,7 @@ mysql> select name from student where studentid in (
 +---------------+
 4 rows in set (0.00 sec)
 
+-- вивести всіх хто вчить математику (Math% писать коротше ніж все слово)
 mysql> select name from student where studentid in
     -> (select Student_StudentID from student_has_discipline join discipline on `Discipline_Discipline ID` = DisciplineID
     -> where `Discipline name` like 'Math%');
@@ -164,6 +184,10 @@ mysql> select name from student where studentid in
 mysql>
 mysql>
 mysql>
+-------------------------------------------------------------------------------------------------------
+• ALL;
+-------------------------------------------------------------------------------------------------------
+-- вивести тих хто старше всіх в групі 1
 mysql> select name, age from student where age > all(
     -> select age from student where groupid = 1);
 +------------+------+
@@ -178,6 +202,10 @@ mysql> select name, age from student where age > all(
 mysql>
 mysql>
 mysql>
+-------------------------------------------------------------------------------------------------------
+• ANY.
+-------------------------------------------------------------------------------------------------------
+-- вивести тих чий вік такий самий як в когось з групи 2
 mysql> select name, age from student where age = any (
     -> select age from student where groupid = 2);
 +---------------+------+
@@ -210,6 +238,14 @@ mysql>
 mysql>
 mysql>
 mysql>
+-------------------------------------------------------------------------------------------------------
+2. Construct an alternative query for each query in the previous clause (for example,
+the condition s=ANY R is equivalent to the condition s IN R).
+2. Для кожного із запитів попереднього пункту реалізувати альтернативний
+запит (наприклад, умова s=ANY R еквівалентна до умови s IN R).
+-------------------------------------------------------------------------------------------------------
+
+-- з exists в in (студент в якого є хоча б одна оцінка)
 mysql> select name from student where studentID in (
     -> select Student_StudentID from student_has_discipline);
 +---------------+
@@ -242,6 +278,8 @@ mysql> select distinct name from student join student_has_discipline  on student
     -> join discipline on `Discipline_Discipline ID` = disciplineID where `Discipline name` is like 'Math%';
 ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'like 'Math%'' at line 2
 mysql>
+
+-- з in в join (вивести всіх хто вчить математику)
 mysql> select distinct name from student join student_has_discipline  on studentid = Student_StudentID
     -> join discipline on `Discipline_Discipline ID` = disciplineID where `Discipline name` like 'Math%';
 +---------------+
@@ -255,6 +293,7 @@ mysql> select distinct name from student join student_has_discipline  on student
 4 rows in set (0.00 sec)
 
 mysql>
+-- з all в not exists (вивести тих хто старше всіх в групі 1)
 mysql> select s1.name, s1.age from student s1 where not exists (
     -> select 1 from student s2 where s2.groupid = 1 and s2.age >= s1.age);
 +------------+------+
@@ -267,6 +306,7 @@ mysql> select s1.name, s1.age from student s1 where not exists (
 3 rows in set (0.00 sec)
 
 mysql>
+-- з any в in (вивести тих чий вік такий самий як в когось з групи 2)
 mysql> select name, age from student where age in (
     -> select age from student where groupid = 2);
 +---------------+------+
@@ -296,6 +336,13 @@ mysql>
 mysql>
 mysql>
 mysql>
+-------------------------------------------------------------------------------------------------------
+3. Construct queries in which theoretical-multiple operations INTERSECT, EXSEPT
+are implemented.
+3. Побудувати запити, в яких реалізуються теоретико-множинні операції
+INTERSECT, EXSEPT.
+-------------------------------------------------------------------------------------------------------
+-- intersect
 mysql> select student_studentid from student_has_discipline where `Discipline_Discipline ID`=1
     -> intersect
     -> select student_studentid from student_has_discipline where `Discipline_Discipline ID`=2;
@@ -318,6 +365,7 @@ mysql> select student_studentid from student_has_discipline where `Discipline_Di
 
 mysql>
 mysql>
+-- exsept
 mysql> select student_studentid from student_has_discipline where `Discipline_Discipline ID`=1
     -> except
     -> select student_studentid from student_has_discipline where `Discipline_Discipline ID`=2;
