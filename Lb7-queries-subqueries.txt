@@ -1,0 +1,345 @@
+Enter password: *******
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 16
+Server version: 8.0.41 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use unik;
+Database changed
+mysql> show tables;
++----------------------------------+
+| Tables_in_unik                   |
++----------------------------------+
+| credit of passing the discipline |
+| discipline                       |
+| discipline_has_specialty         |
+| faculty                          |
+| group                            |
+| phone number                     |
+| specialty                        |
+| student                          |
+| student_has_discipline           |
+| tmp_courses                      |
+| tmp_students                     |
++----------------------------------+
+11 rows in set (0.00 sec)
+
+mysql> select name, t2.avg_grd from (
+    -> select Student_has_Discipline_Student_StudentID, avg(mark) as avg_grd
+    -> from `credit of passing the discipline` group by Student_has_Discipline_Student_StudentID) as t2
+    -> join student on studentid=Student_has_Discipline_Student_StudentID
+    -> where t2.avg_grd > 80;
++--------------+---------+
+| name         | avg_grd |
++--------------+---------+
+| Bob Smith    | 83.0000 |
+| Dana White   | 94.0000 |
+| Hank Davis   | 80.5000 |
+| Ivy Martin   | 80.5000 |
+| Jack Miller  | 89.5000 |
+| Kathy Wilson | 88.0000 |
+| Mona Harris  | 89.0000 |
+| Oscar Young  | 89.5000 |
+| Quincy Adams | 89.5000 |
+| Rita Baker   | 85.0000 |
+| Steve Allen  | 88.0000 |
+| Tina Moore   | 84.5000 |
++--------------+---------+
+12 rows in set (0.00 sec)
+
+mysql> select name, age from student, (
+    -> select avg(age) as avg_age from student) as t2
+    -> where student.age > t2.avg_age;
++---------------+------+
+| name          | age  |
++---------------+------+
+| Alice Johnson |   25 |
+| Bob Smith     |   25 |
+| Eve Green     |   26 |
+| Grace Lee     |   25 |
+| Jack Miller   |   25 |
+| Kathy Wilson  |   25 |
+| Leo Moore     |   27 |
+| Nina Clark    |   25 |
+| Oscar Young   |   25 |
+| Paul Scott    |   27 |
+| Steve Allen   |   25 |
++---------------+------+
+11 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql>
+mysql> select name from student where
+    -> exists (select * from `credit of passing the discipline` as t where Student_has_Discipline_Student_StudentID = studentid);
++---------------+
+| name          |
++---------------+
+| Alice Johnson |
+| Bob Smith     |
+| Charlie Brown |
+| Dana White    |
+| Eve Green     |
+| Frank Black   |
+| Grace Lee     |
+| Hank Davis    |
+| Ivy Martin    |
+| Jack Miller   |
+| Kathy Wilson  |
+| Leo Moore     |
+| Mona Harris   |
+| Nina Clark    |
+| Oscar Young   |
+| Paul Scott    |
+| Quincy Adams  |
+| Rita Baker    |
+| Steve Allen   |
+| Tina Moore    |
++---------------+
+20 rows in set (0.00 sec)
+
+mysql> select name from student where exists
+    -> (select 1 from student_has_discipline where Student_StudentID = studentid);
++---------------+
+| name          |
++---------------+
+| Alice Johnson |
+| Bob Smith     |
+| Charlie Brown |
+| Dana White    |
+| Eve Green     |
+| Frank Black   |
+| Grace Lee     |
+| Hank Davis    |
+| Ivy Martin    |
+| Jack Miller   |
+| Kathy Wilson  |
+| Leo Moore     |
+| Mona Harris   |
+| Nina Clark    |
+| Oscar Young   |
+| Paul Scott    |
+| Quincy Adams  |
+| Rita Baker    |
+| Steve Allen   |
+| Tina Moore    |
++---------------+
+20 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql>
+mysql> select name from student where studentid in (
+    -> select student_studentid from student_has_discipline where `Discipline_Discipline ID` = 1 );
++---------------+
+| name          |
++---------------+
+| Alice Johnson |
+| Bob Smith     |
+| Grace Lee     |
+| Nina Clark    |
++---------------+
+4 rows in set (0.00 sec)
+
+mysql> select name from student where studentid in
+    -> (select Student_StudentID from student_has_discipline join discipline on `Discipline_Discipline ID` = DisciplineID
+    -> where `Discipline name` like 'Math%');
++---------------+
+| name          |
++---------------+
+| Alice Johnson |
+| Bob Smith     |
+| Grace Lee     |
+| Nina Clark    |
++---------------+
+4 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql>
+mysql> select name, age from student where age > all(
+    -> select age from student where groupid = 1);
++------------+------+
+| name       | age  |
++------------+------+
+| Eve Green  |   26 |
+| Leo Moore  |   27 |
+| Paul Scott |   27 |
++------------+------+
+3 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql>
+mysql> select name, age from student where age = any (
+    -> select age from student where groupid = 2);
++---------------+------+
+| name          | age  |
++---------------+------+
+| Alice Johnson |   25 |
+| Bob Smith     |   25 |
+| Charlie Brown |   24 |
+| Dana White    |   24 |
+| Eve Green     |   26 |
+| Frank Black   |   24 |
+| Grace Lee     |   25 |
+| Hank Davis    |   24 |
+| Ivy Martin    |   24 |
+| Jack Miller   |   25 |
+| Kathy Wilson  |   25 |
+| Nina Clark    |   25 |
+| Oscar Young   |   25 |
+| Rita Baker    |   24 |
+| Steve Allen   |   25 |
++---------------+------+
+15 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql> select name from student where studentID in (
+    -> select Student_StudentID from student_has_discipline);
++---------------+
+| name          |
++---------------+
+| Alice Johnson |
+| Bob Smith     |
+| Charlie Brown |
+| Dana White    |
+| Eve Green     |
+| Frank Black   |
+| Grace Lee     |
+| Hank Davis    |
+| Ivy Martin    |
+| Jack Miller   |
+| Kathy Wilson  |
+| Leo Moore     |
+| Mona Harris   |
+| Nina Clark    |
+| Oscar Young   |
+| Paul Scott    |
+| Quincy Adams  |
+| Rita Baker    |
+| Steve Allen   |
+| Tina Moore    |
++---------------+
+20 rows in set (0.00 sec)
+
+mysql> select distinct name from student join student_has_discipline  on studentid = Student_StudentID
+    -> join discipline on `Discipline_Discipline ID` = disciplineID where `Discipline name` is like 'Math%';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'like 'Math%'' at line 2
+mysql>
+mysql> select distinct name from student join student_has_discipline  on studentid = Student_StudentID
+    -> join discipline on `Discipline_Discipline ID` = disciplineID where `Discipline name` like 'Math%';
++---------------+
+| name          |
++---------------+
+| Alice Johnson |
+| Bob Smith     |
+| Grace Lee     |
+| Nina Clark    |
++---------------+
+4 rows in set (0.00 sec)
+
+mysql>
+mysql> select s1.name, s1.age from student s1 where not exists (
+    -> select 1 from student s2 where s2.groupid = 1 and s2.age >= s1.age);
++------------+------+
+| name       | age  |
++------------+------+
+| Eve Green  |   26 |
+| Leo Moore  |   27 |
+| Paul Scott |   27 |
++------------+------+
+3 rows in set (0.00 sec)
+
+mysql>
+mysql> select name, age from student where age in (
+    -> select age from student where groupid = 2);
++---------------+------+
+| name          | age  |
++---------------+------+
+| Alice Johnson |   25 |
+| Bob Smith     |   25 |
+| Charlie Brown |   24 |
+| Dana White    |   24 |
+| Eve Green     |   26 |
+| Frank Black   |   24 |
+| Grace Lee     |   25 |
+| Hank Davis    |   24 |
+| Ivy Martin    |   24 |
+| Jack Miller   |   25 |
+| Kathy Wilson  |   25 |
+| Nina Clark    |   25 |
+| Oscar Young   |   25 |
+| Rita Baker    |   24 |
+| Steve Allen   |   25 |
++---------------+------+
+15 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql> select student_studentid from student_has_discipline where `Discipline_Discipline ID`=1
+    -> intersect
+    -> select student_studentid from student_has_discipline where `Discipline_Discipline ID`=2;
++-------------------+
+| student_studentid |
++-------------------+
+|                 1 |
++-------------------+
+1 row in set (0.00 sec)
+
+mysql> select student_studentid from student_has_discipline where `Discipline_Discipline ID`=1
+    -> intersect
+    -> select student_studentid from student_has_discipline where `Discipline_Discipline ID`=3;
++-------------------+
+| student_studentid |
++-------------------+
+|                 2 |
++-------------------+
+1 row in set (0.00 sec)
+
+mysql>
+mysql>
+mysql> select student_studentid from student_has_discipline where `Discipline_Discipline ID`=1
+    -> except
+    -> select student_studentid from student_has_discipline where `Discipline_Discipline ID`=2;
++-------------------+
+| student_studentid |
++-------------------+
+|                 2 |
+|                 7 |
+|                14 |
++-------------------+
+3 rows in set (0.00 sec)
+
+mysql> select student_studentid from student_has_discipline where `Discipline_Discipline ID`=1
+    -> except
+    -> select student_studentid from student_has_discipline where `Discipline_Discipline ID`=3;
++-------------------+
+| student_studentid |
++-------------------+
+|                 1 |
+|                 7 |
+|                14 |
++-------------------+
+3 rows in set (0.00 sec)
+
+mysql>
