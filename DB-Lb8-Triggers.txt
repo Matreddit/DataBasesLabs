@@ -1,0 +1,319 @@
+Enter password: *******
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 28
+Server version: 8.0.41 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use unik;
+Database changed
+mysql> create trigger calculate_age_on_insert
+    -> before insert on student
+    -> for each row
+    -> set new.age = TIMESTAMPDIFF(YEAR, new.`Birth date`, CURDATE());
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from student order by studentid desc limit 3;
++-----------+-------------+--------------+-------------------------+--------------------+------------+---------+------+
+| StudentID | Name        | Phone number | Home adress             | Record book number | Birth date | GroupID | age  |
++-----------+-------------+--------------+-------------------------+--------------------+------------+---------+------+
+|        20 | Tina Moore  | 555-5454     | 215 Oak St, Townsville  |                120 | 2006-01-01 |       3 |   19 |
+|        19 | Steve Allen | 555-3232     | 104 Elm St, Cityville   |                119 | 1999-12-25 |       5 |   25 |
+|        18 | Rita Baker  | 555-1011     | 902 Redwood St, Midtown |                118 | 2000-11-09 |       2 |   24 |
++-----------+-------------+--------------+-------------------------+--------------------+------------+---------+------+
+3 rows in set (0.00 sec)
+
+mysql> insert into student values (21, 'Maxim', '123-1234', 'Romanenka, 7', 121, '2006-06-20', 1, NULL);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from student order by studentid desc limit 3;
++-----------+-------------+--------------+------------------------+--------------------+------------+---------+------+
+| StudentID | Name        | Phone number | Home adress            | Record book number | Birth date | GroupID | age  |
++-----------+-------------+--------------+------------------------+--------------------+------------+---------+------+
+|        21 | Maxim       | 123-1234     | Romanenka, 7           |                121 | 2006-06-20 |       1 |   18 |
+|        20 | Tina Moore  | 555-5454     | 215 Oak St, Townsville |                120 | 2006-01-01 |       3 |   19 |
+|        19 | Steve Allen | 555-3232     | 104 Elm St, Cityville  |                119 | 1999-12-25 |       5 |   25 |
++-----------+-------------+--------------+------------------------+--------------------+------------+---------+------+
+3 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql>
+
+*************************************************************************************************
+1. Create an SQL trigger that does not allow updating the value of a tuple to a new
+value that does not satisfy some condition (this condition cannot be specified using
+standard constraints when creating a table schema).
+*************************************************************************************************
+
+mysql> delimiter //
+mysql> create trigger update_student_age
+    -> before update on Student
+    -> for each row begin
+    -> set new.age = TIMESTAMPDIFF(YEAR, new.`Birth date`, CURDATE());
+    -> end; //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> create trigger prevent_invalid_bitrhdate_update
+    -> before update on Student
+    -> for each row precedes update_student_age
+    -> begin
+    -> if TIMESTAMPDIFF(YEAR, new.`Birth date`, CURDATE()) < 17
+    -> or TIMESTAMPDIFF(YEAR, new.`Birth date`, CURDATE()) > 100 then
+    -> signal sqlstate '45000'
+    -> set message_text = 'Age must be between 17 and 100';
+    -> end if;
+    -> end; //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> update student set `Birth date` = '2010-01-01' where studentID=21; //
+ERROR 1644 (45000): Age must be between 17 and 100
+mysql> update student set `Birth date` = '2007-01-01' where studentID=21; //
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from student order by studentid desc limit 3;
+    -> //
++-----------+-------------+--------------+------------------------+--------------------+------------+---------+------+
+| StudentID | Name        | Phone number | Home adress            | Record book number | Birth date | GroupID | age  |
++-----------+-------------+--------------+------------------------+--------------------+------------+---------+------+
+|        21 | Maxim       | 123-1234     | Romanenka, 7           |                121 | 2007-01-01 |       1 |   18 |
+|        20 | Tina Moore  | 555-5454     | 215 Oak St, Townsville |                120 | 2006-01-01 |       3 |   19 |
+|        19 | Steve Allen | 555-3232     | 104 Elm St, Cityville  |                119 | 1999-12-25 |       5 |   25 |
++-----------+-------------+--------------+------------------------+--------------------+------------+---------+------+
+3 rows in set (0.00 sec)
+
+mysql> update student set `Birth date` = '2000-01-01' where studentID=21; //
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from student order by studentid desc limit 1;
+    -> //
++-----------+-------+--------------+--------------+--------------------+------------+---------+------+
+| StudentID | Name  | Phone number | Home adress  | Record book number | Birth date | GroupID | age  |
++-----------+-------+--------------+--------------+--------------------+------------+---------+------+
+|        21 | Maxim | 123-1234     | Romanenka, 7 |                121 | 2000-01-01 |       1 |   25 |
++-----------+-------+--------------+--------------+--------------------+------------+---------+------+
+1 row in set (0.00 sec)
+
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+*************************************************************************************************
+2. Create an SQL trigger that does not allow inserting a new value of a tuple that does
+not satisfy some condition (this condition must be specific to the subject area of the
+task from your variant).
+*************************************************************************************************
+
+mysql> create trigger check_discipline_hours
+    -> before insert on Discipline
+    -> for each row begin
+    -> if 2*(new.`amount of seminar classes` + new.`amount of practical classes`) > new.`Number of hours`
+    -> then
+    -> SIGNAL SQLSTATE '45000'
+    -> set message_text = 'Number of hours is less than seminar and practical classes!';
+    -> end if;
+    -> end; //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from Discipline order by studentid desc limit 3;
+    -> //
+ERROR 1054 (42S22): Unknown column 'studentid' in 'order clause'
+mysql> select * from Discipline order by Disciplineid desc limit 3; //
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+| DisciplineID | Discipline name | Number of hours | amount of seminar classes | amount of practical classes |
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+|           20 | Art History     |              75 |                        20 |                          35 |
+|           19 | Medicine        |             200 |                        55 |                         100 |
+|           18 | Law             |             150 |                        40 |                          70 |
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+3 rows in set (0.00 sec)
+
+mysql> insert into discipline values (21, 'test Discipline', 20, 5, 5); //
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into discipline values (22, 'test Discipline 2', 20, 6, 5); //
+ERROR 1644 (45000): Number of hours is less than seminar and practical classes!
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+*************************************************************************************************
+3. Create an SQL trigger that processes a certain event (associated with an update,
+delete or insert row operation) specific to your variant of the task.
+
+Передбачити розробку тригерів, які мають забезпечити каскадні зміни в зв’язаних таблицях.
+*************************************************************************************************
+
+mysql> delimiter //
+mysql> create trigger on_student_delete
+    -> before delete on Student
+    -> for each row begin
+    -> delete from `credit of passing the discipline` where
+    -> Student_has_Discipline_Student_StudentID = old.StudentID;
+    -> delete from student_has_discipline where
+    -> Student_StudentID =  old.StudentID;
+    -> delete from `phone number` where
+    -> Student_StudentID =  old.StudentID;
+    -> end; //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> insert into student_has_discipline values (21, 1), (21, 2), (21, 20), (21, 19); //
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> insert into `credit of passing the discipline` values (1, 21, 20, '2024-12-12', 98, 'Oleksandr Oleksandrovych'),
+    -> (1, 21, 1, '2023-01-01', 78, 'Datsuk Serhii'); //
+Query OK, 2 rows affected (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> insert into `phone number` values (12, '333-4444', 21); //
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from `credit of passing the discipline` where Student_has_Discipline_Student_StudentID = 21;
+    -> //
++----------+------------------------------------------+-------------------------------------------------+-----------------+------+--------------------------+
+| Semester | Student_has_Discipline_Student_StudentID | Student_has_Discipline_Discipline_Discipline ID | date of passing | mark | teacher's name           |
++----------+------------------------------------------+-------------------------------------------------+-----------------+------+--------------------------+
+|        1 |                                       21 |                                               1 | 2023-01-01      |   78 | Datsuk Serhii            |
+|        1 |                                       21 |                                              20 | 2024-12-12      |   98 | Oleksandr Oleksandrovych |
++----------+------------------------------------------+-------------------------------------------------+-----------------+------+--------------------------+
+2 rows in set (0.00 sec)
+
+mysql> select * from `phone number` where Student_StudentID = 21;
+    -> //
++---------+--------------+-------------------+
+| PhoneID | phone number | Student_StudentID |
++---------+--------------+-------------------+
+|      12 | 333-4444     |                21 |
++---------+--------------+-------------------+
+1 row in set (0.00 sec)
+
+mysql> select * from student_has_discipline where Student_StudentID = 21; //
++-------------------+--------------------------+
+| Student_StudentID | Discipline_Discipline ID |
++-------------------+--------------------------+
+|                21 |                        1 |
+|                21 |                        2 |
+|                21 |                       19 |
+|                21 |                       20 |
++-------------------+--------------------------+
+4 rows in set (0.00 sec)
+
+mysql> delete from student where studentid = 21;
+    -> //
+Query OK, 1 row affected (0.00 sec)
+
+mysql> delimiter ;
+mysql> select * from `credit of passing the discipline` where Student_has_Discipline_Student_StudentID = 21;
+Empty set (0.00 sec)
+
+mysql> select * from `phone number` where Student_StudentID = 21;
+Empty set (0.00 sec)
+
+mysql> select * from student_has_discipline where Student_StudentID = 21;
+Empty set (0.00 sec)
+
+mysql> select * from student order by studentid desc limit 3;
++-----------+-------------+--------------+-------------------------+--------------------+------------+---------+------+
+| StudentID | Name        | Phone number | Home adress             | Record book number | Birth date | GroupID | age  |
++-----------+-------------+--------------+-------------------------+--------------------+------------+---------+------+
+|        20 | Tina Moore  | 555-5454     | 215 Oak St, Townsville  |                120 | 2006-01-01 |       3 |   19 |
+|        19 | Steve Allen | 555-3232     | 104 Elm St, Cityville   |                119 | 1999-12-25 |       5 |   25 |
+|        18 | Rita Baker  | 555-1011     | 902 Redwood St, Midtown |                118 | 2000-11-09 |       2 |   24 |
++-----------+-------------+--------------+-------------------------+--------------------+------------+---------+------+
+3 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql> delimiter //
+mysql> create trigger on_discipline_delete
+    -> before delete on discipline
+    -> for each row begin
+    -> delete from `credit of passing the discipline` where
+    -> `Student_has_Discipline_Discipline_Discipline ID` = old.DisciplineID;
+    -> delete from student_has_discipline where
+    -> `Discipline_Discipline ID` = old.DisciplineID;
+    -> delete from discipline_has_specialty where
+    -> `Discipline_Discipline ID` = old.DisciplineID;
+    -> end; //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from discipline order by disciplineid desc limit 3;
+    -> //
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+| DisciplineID | Discipline name | Number of hours | amount of seminar classes | amount of practical classes |
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+|           21 | test Discipline |              20 |                         5 |                           5 |
+|           20 | Art History     |              75 |                        20 |                          35 |
+|           19 | Medicine        |             200 |                        55 |                         100 |
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+3 rows in set (0.00 sec)
+
+mysql> delimiter ;
+mysql> insert into discipline_has_specialty values (21, 1);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into student_has_discipline values (1, 21);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into `credit of passing the discipline` values (1, 1, 21, '2023-01-01', 80, 'Serhii Datsuk'), (1, 10, 21, '2023-01-01', 80, 'Serhii Datsuk')
+    -> ;
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`unik`.`credit of passing the discipline`, CONSTRAINT `credit of passing the discipline_ibfk_1` FOREIGN KEY (`Student_has_Discipline_Student_StudentID`, `Student_has_Discipline_Discipline_Disc)
+mysql> insert into `credit of passing the discipline` values (1, 1, 21, '2023-01-01', 80, 'Serhii Datsuk');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from discipline_has_specialty where `Discipline_Discipline ID` = 21;
++--------------------------+------------------------+
+| Discipline_Discipline ID | Specialty_Specialty ID |
++--------------------------+------------------------+
+|                       21 |                      1 |
++--------------------------+------------------------+
+1 row in set (0.00 sec)
+
+mysql> select * from student_has_discipline where `Discipline_Discipline ID` = 21;
++-------------------+--------------------------+
+| Student_StudentID | Discipline_Discipline ID |
++-------------------+--------------------------+
+|                 1 |                       21 |
++-------------------+--------------------------+
+1 row in set (0.00 sec)
+
+mysql> select * from `credit of passing the discipline` where `Student_has_Discipline_Discipline_Discipline ID` = 21;
++----------+------------------------------------------+-------------------------------------------------+-----------------+------+----------------+
+| Semester | Student_has_Discipline_Student_StudentID | Student_has_Discipline_Discipline_Discipline ID | date of passing | mark | teacher's name |
++----------+------------------------------------------+-------------------------------------------------+-----------------+------+----------------+
+|        1 |                                        1 |                                              21 | 2023-01-01      |   80 | Serhii Datsuk  |
++----------+------------------------------------------+-------------------------------------------------+-----------------+------+----------------+
+1 row in set (0.00 sec)
+
+mysql> delete from discipline where disciplineid = 21;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from discipline_has_specialty where `Discipline_Discipline ID` = 21;
+Empty set (0.00 sec)
+
+mysql> select * from student_has_discipline where `Discipline_Discipline ID` = 21;
+Empty set (0.00 sec)
+
+mysql> select * from `credit of passing the discipline` where `Student_has_Discipline_Discipline_Discipline ID` = 21;
+Empty set (0.00 sec)
+
+mysql>
