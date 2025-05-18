@@ -1,0 +1,273 @@
+Enter password: *******
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 38
+Server version: 8.0.41 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use unik
+Database changed
+
+***********************************************************************************************
+1. Create a procedure that displays data based on the value of the input parameter (for
+example, the full names of all children born in the year specified by the input
+parameter of the procedure are displayed).
+
+1. Створити процедуру, яка виводить на екран дані, обумовлені значенням
+вхідного параметра (наприклад, виводяться ПІБ усіх дітей, які народились у
+рік, що задається вхідним параметром процедури).
+***********************************************************************************************
+
+mysql> delimiter //
+mysql> create procedure GetStudentByYear(in birthyear int)
+    -> begin
+    -> select name from student where year(`Birth date`) = birthyear;
+    -> end //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql>
+mysql> call GetStudentByYear(2006);
+    -> //
++------------+
+| name       |
++------------+
+| Tina Moore |
++------------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> delimiter ;
+mysql> call GetStudentByYear(2001);
++---------------+
+| name          |
++---------------+
+| Charlie Brown |
+| Frank Black   |
+| Ivy Martin    |
+| Mona Harris   |
+| Quincy Adams  |
++---------------+
+5 rows in set (0.00 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql>
+
+***********************************************************************************************
+2. Create a procedure that contains input and output parameters and replaces the old
+value with a new one (for example, for a specific client, changes his official address
+and writes the full name of this client to the output parameter).
+
+2. Створити процедуру, яка містить вхідний і вихідний параметри та виконує
+заміну старого значення на нове (наприклад, для певного клієнта змінює
+його офіційну адресу і записує у вихідний параметр ПІБ цього клієнта).
+***********************************************************************************************
+
+mysql> delimiter //
+mysql> create procedure UpdateStudentNumber(in id int, in newPhone varchar(45), out studentName varchar(45))
+    -> begin
+    -> update student set `Phone number` = newPhone where StudentID = id;
+    -> select Name into studentName from student where StudentID = id;
+    -> end //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> delimiter ;
+mysql>  select * from student limit 3;
++-----------+---------------+--------------+--------------------------+--------------------+------------+---------+------+
+| StudentID | Name          | Phone number | Home adress              | Record book number | Birth date | GroupID | age  |
++-----------+---------------+--------------+--------------------------+--------------------+------------+---------+------+
+|         1 | Alice Johnson | 555-1234     | 123 Elm St, Cityville    |                101 | 2000-03-15 |       1 |   25 |
+|         2 | Bob Smith     | 555-5678     | 456 Oak St, Townsville   |                102 | 1999-06-20 |       2 |   25 |
+|         3 | Charlie Brown | 555-8765     | 789 Pine St, Villageburg |                103 | 2001-02-10 |       3 |   24 |
++-----------+---------------+--------------+--------------------------+--------------------+------------+---------+------+
+3 rows in set (0.00 sec)
+
+mysql> call UpdateStudentNumber(1, '444-4321', @name);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select @name;
++---------------+
+| @name         |
++---------------+
+| Alice Johnson |
++---------------+
+1 row in set (0.00 sec)
+
+mysql>  select * from student limit 3;
++-----------+---------------+--------------+--------------------------+--------------------+------------+---------+------+
+| StudentID | Name          | Phone number | Home adress              | Record book number | Birth date | GroupID | age  |
++-----------+---------------+--------------+--------------------------+--------------------+------------+---------+------+
+|         1 | Alice Johnson | 444-4321     | 123 Elm St, Cityville    |                101 | 2000-03-15 |       1 |   25 |
+|         2 | Bob Smith     | 555-5678     | 456 Oak St, Townsville   |                102 | 1999-06-20 |       2 |   25 |
+|         3 | Charlie Brown | 555-8765     | 789 Pine St, Villageburg |                103 | 2001-02-10 |       3 |   24 |
++-----------+---------------+--------------+--------------------------+--------------------+------------+---------+------+
+3 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql>
+mysql>
+
+***********************************************************************************************
+3. Create a function that displays data based on the value of the input parameter. Create
+a query in the condition of which this function is called.
+
+3. Створити функцію, яка виводить на екран дані, обумовлені значенням
+вхідного параметра. Створити запит, в умові якого викликається ця функція.
+***********************************************************************************************
+
+mysql> delimiter //
+mysql> create function GetStudentName(id int) returns varchar(45)
+    -> begin
+    -> declare FullName varchar(45);
+    -> select Name into FullName from student where id = studentID;
+    -> return FullName;
+    -> end //
+ERROR 1418 (HY000): This function has none of DETERMINISTIC, NO SQL, or READS SQL DATA in its declaration and binary logging is enabled (you *might* want to use the less safe log_bin_trust_function_creators variable)
+mysql>
+******** DETERMINISTIC значить що функція повертає однакове значення при однакових параметрах.  ********
+******** NOT DETERMINISTIC це функції типу RAND() NOW()                                         ********
+mysql> create function GetStudentName(id int) returns varchar(45)
+    -> DETERMINISTIC
+    -> begin
+    -> declare FullName varchar(45);
+    -> select Name into FullName from student where id = studentID;
+    -> return FullName;
+    -> end //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select GetStudentName(Student_StudentID) as Name, count(`Discipline_Discipline ID`) as NumberOfDisciplines
+    -> from student_has_discipline group by Student_StudentID;
+    -> //
++---------------+---------------------+
+| Name          | NumberOfDisciplines |
++---------------+---------------------+
+| Alice Johnson |                   4 |
+| Bob Smith     |                   2 |
+| Charlie Brown |                   2 |
+| Dana White    |                   2 |
+| Eve Green     |                   2 |
+| Frank Black   |                   2 |
+| Grace Lee     |                   2 |
+| Hank Davis    |                   2 |
+| Ivy Martin    |                   2 |
+| Jack Miller   |                   2 |
+| Kathy Wilson  |                   2 |
+| Leo Moore     |                   2 |
+| Mona Harris   |                   2 |
+| Nina Clark    |                   2 |
+| Oscar Young   |                   2 |
+| Paul Scott    |                   2 |
+| Quincy Adams  |                   2 |
+| Rita Baker    |                   2 |
+| Steve Allen   |                   5 |
+| Tina Moore    |                   2 |
++---------------+---------------------+
+20 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql>
+mysql>
+
+***********************************************************************************************
+4. Create a procedure that performs certain calculations on the field values depending
+on the value of the input parameter (for example, calculates the price of the product
+according to the discount).
+
+4. Створити процедуру, яка виконує певні обчислення над значеннями полів в
+залежності від значення вхідного параметра (наприклад, обчислює ціну
+товару в залежності від того, чи діє знижка).
+***********************************************************************************************
+
+mysql> create function CountDisciplines(sID int) returns int
+    -> deterministic
+    -> begin
+    -> declare res int;
+    -> select count(`Discipline_Discipline ID`) into res
+    -> from student_has_discipline where Student_StudentID = sID;
+    -> return res;
+    -> end //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select FullName, GroupID, CountDisciplines(ID) as NumberOfDisciplines from studentlist;
+    -> //
++---------------+---------+---------------------+
+| FullName      | GroupID | NumberOfDisciplines |
++---------------+---------+---------------------+
+| Alice Johnson |       1 |                   4 |
+| Bob Smith     |       2 |                   2 |
+| Charlie Brown |       3 |                   2 |
+| Dana White    |       4 |                   2 |
+| Eve Green     |       2 |                   2 |
+| Frank Black   |       1 |                   2 |
+| Grace Lee     |       3 |                   2 |
+| Hank Davis    |       4 |                   2 |
+| Ivy Martin    |       1 |                   2 |
+| Jack Miller   |       2 |                   2 |
+| Kathy Wilson  |       3 |                   2 |
+| Leo Moore     |       4 |                   2 |
+| Mona Harris   |       1 |                   2 |
+| Nina Clark    |       2 |                   2 |
+| Oscar Young   |       3 |                   2 |
+| Paul Scott    |       4 |                   2 |
+| Quincy Adams  |       1 |                   2 |
+| Rita Baker    |       2 |                   2 |
+| Steve Allen   |       5 |                   5 |
+| Tina Moore    |       3 |                   2 |
+| Maxim         |       1 |                   0 |
++---------------+---------+---------------------+
+21 rows in set (0.00 sec)
+
+
+mysql>
+mysql>
+mysql>
+mysql> create function AvgMark(sID int) returns decimal(5,2) -- 999.99
+    -> deterministic
+    -> begin
+    -> declare res decimal(5,2);
+    -> select avg(mark) into res from `credit of passing the discipline`
+    -> where Student_has_Discipline_Student_StudentID = sID;
+    -> return res;
+    -> end //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select FullName, AvgMark(ID) as AverageMark from studentlist order by AverageMark desc;
+    -> //
++---------------+-------------+
+| FullName      | AverageMark |
++---------------+-------------+
+| Dana White    |       94.00 |
+| Jack Miller   |       89.50 |
+| Oscar Young   |       89.50 |
+| Quincy Adams  |       89.50 |
+| Mona Harris   |       89.00 |
+| Kathy Wilson  |       88.00 |
+| Steve Allen   |       88.00 |
+| Rita Baker    |       85.00 |
+| Tina Moore    |       84.50 |
+| Bob Smith     |       83.00 |
+| Hank Davis    |       80.50 |
+| Ivy Martin    |       80.50 |
+| Eve Green     |       80.00 |
+| Paul Scott    |       80.00 |
+| Charlie Brown |       79.00 |
+| Leo Moore     |       79.00 |
+| Grace Lee     |       77.00 |
+| Nina Clark    |       76.00 |
+| Frank Black   |       73.50 |
+| Alice Johnson |        NULL |
+| Maxim         |        NULL |
++---------------+-------------+
+21 rows in set (0.00 sec)
+
+mysql>
