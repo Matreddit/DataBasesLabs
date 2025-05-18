@@ -1,0 +1,332 @@
+Enter password: *******
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 34
+Server version: 8.0.41 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use unik
+Database changed
+
+**************************************************************************************
+1. Create a view for a specific group of users. Rename the fields that are selected
+from the source tables.
+
+1. Створити представлення для роботи певної групи користувачів з
+використанням можливості перейменування полів, які вибираються з
+таблиць-першоджерел, на нові назви.
+**************************************************************************************
+
+mysql> create view FacultyList as
+    -> select f.facultyname as Faculty, s.SpecialtyName as Specialty, g.groupname as `Group`, d.`Discipline name` as Discipline
+    -> from Discipline d, discipline_has_specialty ds, Specialty s, `Group` g, Faculty f
+    -> where d.DisciplineID = ds.`Discipline_Discipline ID` and ds.`Specialty_Specialty ID` = s.SpecialtyID and g.Specialty_SpecialtyID = s.SpecialtyID and s.Faculty_FacultyID = f.FacultyID;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from facultylist;
++---------+-----------+--------+-------------------------+
+| Faculty | Specialty | Group  | Discipline              |
++---------+-----------+--------+-------------------------+
+| FM      | CS        | Group1 | Mathematics             |
+| FM      | CS        | Group1 | Physics                 |
+| FM      | CS        | Group1 | Computer Science        |
+| FM      | CS        | Group1 | Philosophy              |
+| FM      | CS        | Group1 | Geography               |
+| FM      | CS        | Group1 | Engineering Mechanics   |
+| FM      | CS        | Group1 | Business Administration |
+| FM      | CS        | Group1 | Medicine                |
+| f2      | s2        | Group2 | Mathematics             |
+| f2      | s2        | Group2 | Chemistry               |
+| f2      | s2        | Group2 | English Literature      |
+| f2      | s2        | Group2 | Economics               |
+| f2      | s2        | Group2 | Sociology               |
+| f2      | s2        | Group2 | Political Science       |
+| f2      | s2        | Group2 | Environmental Science   |
+| f2      | s2        | Group2 | Law                     |
+| f3      | s3        | Group3 | Physics                 |
+| f3      | s3        | Group3 | Biology                 |
+| f3      | s3        | Group3 | History                 |
+| f3      | s3        | Group3 | Economics               |
+| f3      | s3        | Group3 | Sociology               |
+| f3      | s3        | Group3 | Engineering Mechanics   |
+| f3      | s3        | Group3 | Environmental Science   |
+| f3      | s3        | Group3 | Art History             |
+| f4      | s4        | Group4 | Chemistry               |
+| f4      | s4        | Group4 | Computer Science        |
+| f4      | s4        | Group4 | History                 |
+| f4      | s4        | Group4 | Psychology              |
+| f4      | s4        | Group4 | Political Science       |
+| f4      | s4        | Group4 | Statistics              |
+| f4      | s4        | Group4 | Law                     |
+| f5      | s5        | Group5 | Biology                 |
+| f5      | s5        | Group5 | English Literature      |
+| f5      | s5        | Group5 | Philosophy              |
+| f5      | s5        | Group5 | Psychology              |
+| f5      | s5        | Group5 | Geography               |
+| f5      | s5        | Group5 | Statistics              |
+| f5      | s5        | Group5 | Business Administration |
+| f5      | s5        | Group5 | Medicine                |
++---------+-----------+--------+-------------------------+
+39 rows in set (0.00 sec)
+
+**************************************************************************************
+2. Create a view with a calculated field (for example: calculate the number of free
+seats as the difference between the total number of seats and the number of
+ordered tickets).
+
+2. Створити представлення з обчислювальним полем (наприклад: обчислити
+кількість вільних місць, як різницю між загальною кількістю місць і кількістю
+замовлених білетів).
+**************************************************************************************
+
+
+mysql> create view Debts as
+    -> select s.Name, count(sd.`Discipline_Discipline ID`) - count(p.`Student_has_Discipline_Discipline_Discipline ID`) as CreditsPending
+    -> from student_has_discipline as sd join student as s on s.StudentID = sd.Student_StudentID
+    -> left join `credit of passing the discipline` as p on p.Student_has_Discipline_Student_StudentID = sd.Student_StudentID
+    -> and p.`Student_has_Discipline_Discipline_Discipline ID` = sd.`Discipline_Discipline ID`
+    -> group by s.Name
+    -> order by CreditsPending desc;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from debts;
++---------------+----------------+
+| Name          | CreditsPending |
++---------------+----------------+
+| Steve Allen   |              3 |
+| Alice Johnson |              2 |
+| Grace Lee     |              1 |
+| Bob Smith     |              0 |
+| Charlie Brown |              0 |
+| Dana White    |              0 |
+| Eve Green     |              0 |
+| Frank Black   |              0 |
+| Hank Davis    |              0 |
+| Ivy Martin    |              0 |
+| Jack Miller   |              0 |
+| Kathy Wilson  |              0 |
+| Leo Moore     |              0 |
+| Mona Harris   |              0 |
+| Nina Clark    |              0 |
+| Oscar Young   |              0 |
+| Paul Scott    |              0 |
+| Quincy Adams  |              0 |
+| Rita Baker    |              0 |
+| Tina Moore    |              0 |
++---------------+----------------+
+20 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql> create view StudentHourLoad as
+    -> select s.Name, sum(d.`Number of hours`) as TotalHours
+    -> from student s join student_has_discipline sd on s.studentid = sd.student_studentid
+    -> join discipline d on sd.`Discipline_Discipline ID` = d.disciplineid
+    -> group by s.name;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from StudentHourLoad;
++---------------+------------+
+| Name          | TotalHours |
++---------------+------------+
+| Alice Johnson |        545 |
+| Bob Smith     |        220 |
+| Grace Lee     |        215 |
+| Nina Clark    |        220 |
+| Dana White    |        240 |
+| Quincy Adams  |        350 |
+| Hank Davis    |        280 |
+| Oscar Young   |        250 |
+| Charlie Brown |        290 |
+| Ivy Martin    |        210 |
+| Paul Scott    |        220 |
+| Mona Harris   |        310 |
+| Steve Allen   |        615 |
+| Jack Miller   |        210 |
+| Eve Green     |        155 |
+| Kathy Wilson  |        230 |
+| Leo Moore     |        195 |
+| Frank Black   |        240 |
+| Tina Moore    |        230 |
+| Rita Baker    |        170 |
++---------------+------------+
+20 rows in set (0.00 sec)
+
+mysql> \
+mysql>
+mysql>
+mysql>
+
+**************************************************************************************
+3. Create a query for selecting based on a condition for one of the views.
+
+3. Створити запит на вибірку за умовою до одного з представлень.
+**************************************************************************************
+
+mysql>
+mysql> select * from studenthourload where totalhours > 300;
++---------------+------------+
+| Name          | TotalHours |
++---------------+------------+
+| Alice Johnson |        545 |
+| Quincy Adams  |        350 |
+| Mona Harris   |        310 |
+| Steve Allen   |        615 |
++---------------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from debts where creditspending > 0;
++---------------+----------------+
+| Name          | CreditsPending |
++---------------+----------------+
+| Steve Allen   |              3 |
+| Alice Johnson |              2 |
+| Grace Lee     |              1 |
++---------------+----------------+
+3 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql>
+mysql>
+
+**************************************************************************************
+4. Create a view, the update of which allows you to update the data in the source
+tables.
+
+4. Реалізувати можливість модифікації віртуальних таблиць і, таким чином,
+модифікувати дані в таблицях-першоджерелах.
+**************************************************************************************
+
+mysql> create view `StudentList` as
+    -> select StudentID as ID, name as FullName, `Record book number` as RecordBook, GroupID from student;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from studentList;
++----+---------------+------------+---------+
+| ID | FullName      | RecordBook | GroupID |
++----+---------------+------------+---------+
+|  1 | Alice Johnson |        101 |       1 |
+|  2 | Bob Smith     |        102 |       2 |
+|  3 | Charlie Brown |        103 |       3 |
+|  4 | Dana White    |        104 |       4 |
+|  5 | Eve Green     |        105 |       2 |
+|  6 | Frank Black   |        106 |       1 |
+|  7 | Grace Lee     |        107 |       3 |
+|  8 | Hank Davis    |        108 |       4 |
+|  9 | Ivy Martin    |        109 |       1 |
+| 10 | Jack Miller   |        110 |       2 |
+| 11 | Kathy Wilson  |        111 |       3 |
+| 12 | Leo Moore     |        112 |       4 |
+| 13 | Mona Harris   |        113 |       1 |
+| 14 | Nina Clark    |        114 |       2 |
+| 15 | Oscar Young   |        115 |       3 |
+| 16 | Paul Scott    |        116 |       4 |
+| 17 | Quincy Adams  |        117 |       1 |
+| 18 | Rita Baker    |        118 |       2 |
+| 19 | Steve Allen   |        119 |       5 |
+| 20 | Tina Moore    |        120 |       3 |
++----+---------------+------------+---------+
+20 rows in set (0.00 sec)
+
+mysql> select * from student order by studentid desc limit 3;
++-----------+-------------+--------------+-------------------------+--------------------+------------+---------+------+
+| StudentID | Name        | Phone number | Home adress             | Record book number | Birth date | GroupID | age  |
++-----------+-------------+--------------+-------------------------+--------------------+------------+---------+------+
+|        20 | Tina Moore  | 555-5454     | 215 Oak St, Townsville  |                120 | 2006-01-01 |       3 |   19 |
+|        19 | Steve Allen | 555-3232     | 104 Elm St, Cityville   |                119 | 1999-12-25 |       5 |   25 |
+|        18 | Rita Baker  | 555-1011     | 902 Redwood St, Midtown |                118 | 2000-11-09 |       2 |   24 |
++-----------+-------------+--------------+-------------------------+--------------------+------------+---------+------+
+3 rows in set (0.00 sec)
+
+mysql> insert into StudentList values (21, 'Maxim', 121, 1);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from student order by studentid desc limit 3;
++-----------+-------------+--------------+------------------------+--------------------+------------+---------+------+
+| StudentID | Name        | Phone number | Home adress            | Record book number | Birth date | GroupID | age  |
++-----------+-------------+--------------+------------------------+--------------------+------------+---------+------+
+|        21 | Maxim       | NULL         | NULL                   |                121 | NULL       |       1 | NULL |
+|        20 | Tina Moore  | 555-5454     | 215 Oak St, Townsville |                120 | 2006-01-01 |       3 |   19 |
+|        19 | Steve Allen | 555-3232     | 104 Elm St, Cityville  |                119 | 1999-12-25 |       5 |   25 |
++-----------+-------------+--------------+------------------------+--------------------+------------+---------+------+
+3 rows in set (0.00 sec)
+
+mysql>
+mysql>
+mysql>
+mysql> create view `DisciplineList` as
+    -> select DisciplineID as ID, `Discipline name` as Name, `Number of hours` as Hours from discipline;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from DisciplineList;
++----+-------------------------+-------+
+| ID | Name                    | Hours |
++----+-------------------------+-------+
+|  1 | Mathematics             |   120 |
+|  2 | Physics                 |   150 |
+|  3 | Chemistry               |   100 |
+|  4 | Biology                 |   110 |
+|  5 | Computer Science        |   180 |
+|  6 | English Literature      |    90 |
+|  7 | History                 |    80 |
+|  8 | Philosophy              |    75 |
+|  9 | Economics               |   130 |
+| 10 | Psychology              |   110 |
+| 11 | Sociology               |    95 |
+| 12 | Geography               |   100 |
+| 13 | Political Science       |   120 |
+| 14 | Engineering Mechanics   |   150 |
+| 15 | Statistics              |   120 |
+| 16 | Environmental Science   |   100 |
+| 17 | Business Administration |   110 |
+| 18 | Law                     |   150 |
+| 19 | Medicine                |   200 |
+| 20 | Art History             |    75 |
++----+-------------------------+-------+
+20 rows in set (0.00 sec)
+
+mysql> select * from discipline order by disciplineid desc limit 3;
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+| DisciplineID | Discipline name | Number of hours | amount of seminar classes | amount of practical classes |
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+|           20 | Art History     |              75 |                        20 |                          35 |
+|           19 | Medicine        |             200 |                        55 |                         100 |
+|           18 | Law             |             150 |                        40 |                          70 |
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+3 rows in set (0.00 sec)
+
+mysql> insert into DisciplineList values (21, 'test discipline', 50);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from discipline order by disciplineid desc limit 3;
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+| DisciplineID | Discipline name | Number of hours | amount of seminar classes | amount of practical classes |
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+|           21 | test discipline |              50 |                      NULL |                        NULL |
+|           20 | Art History     |              75 |                        20 |                          35 |
+|           19 | Medicine        |             200 |                        55 |                         100 |
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+3 rows in set (0.00 sec)
+
+mysql> update DisciplineList set Hours = 150 where id = 21;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from discipline order by disciplineid desc limit 3;
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+| DisciplineID | Discipline name | Number of hours | amount of seminar classes | amount of practical classes |
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+|           21 | test discipline |             150 |                      NULL |                        NULL |
+|           20 | Art History     |              75 |                        20 |                          35 |
+|           19 | Medicine        |             200 |                        55 |                         100 |
++--------------+-----------------+-----------------+---------------------------+-----------------------------+
+3 rows in set (0.00 sec)
+
+mysql>
