@@ -1,0 +1,657 @@
+Enter password: *******
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 47
+Server version: 8.0.41 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+******************************************************************************************************
+1. Create an account User1 with a password; set limits (for example, the number of
+connections per hour). View the properties of existing accounts.
+******************************************************************************************************
+
+mysql> create user User1@localhost identified by '1234'
+    -> with MAX_QUERIES_PER_HOUR 100
+    -> MAX_CONNECTIONS_PER_HOUR 50
+    -> MAX_UPDATES_PER_HOUR 50
+    -> MAX_USER_CONNECTIONS 5;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> alter user User1@localhost with MAX_CONNECTIONS_PER_HOUR 30;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql>
+mysql> select user, host, authentication_string from mysql.user;
++------------------+-----------+------------------------------------------------------------------------+
+| user             | host      | authentication_string                                                  |
++------------------+-----------+------------------------------------------------------------------------+
+| User1            | localhost | $A$005$w0      %QLUj&/DzT
+AJdz5fwIMJXIPfYqxWGfdEvhEzB0982jwg3iqHuOmk. |
+| mysql.infoschema | localhost | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED |
+| mysql.session    | localhost | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED |
+| mysql.sys        | localhost | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED |
+| root             | localhost | $A$005$c)/SvM%CV]f]n!1~yx6ssfVvqXPFOog53egPNLhknJBZssRKILc7njfTNi3 |
++------------------+-----------+------------------------------------------------------------------------+
+5 rows in set (0.00 sec)
+
+mysql> show grants for User1@localhost;
++-------------------------------------------+
+| Grants for User1@localhost                |
++-------------------------------------------+
+| GRANT USAGE ON *.* TO `User1`@`localhost` |
++-------------------------------------------+
+1 row in set (0.00 sec)
+
+******************************************************************************************************
+2. Grant the User1 account the privileges necessary to perform the following
+actions:
+• creating tables in the database;
+• selecting and deleting data from a specific table.
+******************************************************************************************************
+
+mysql> grant create on unik.* to User1@localhost;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> grant select, delete on unik.`phone number` to User1@localhost;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> show grants for User1@localhost;
++----------------------------------------------------------------------+
+| Grants for User1@localhost                                           |
++----------------------------------------------------------------------+
+| GRANT USAGE ON *.* TO `User1`@`localhost`                            |
+| GRANT CREATE ON `unik`.* TO `User1`@`localhost`                      |
+| GRANT SELECT, DELETE ON `unik`.`phone number` TO `User1`@`localhost` |
++----------------------------------------------------------------------+
+3 rows in set (0.00 sec)
+
+******************************************************************************************************
+3. Create an account User2 with the ability to grant its own privileges. Grant some
+administrator privilege to the User2 account.
+******************************************************************************************************
+
+mysql> create user User2@localhost identified by '12345678';
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> grant select on unik.* to User2@localhost with grant option;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> grant all on *.* to User2@localhost;
+Query OK, 0 rows affected (0.00 sec)
+
+
+******************************************************************************************************
+4. Determine the levels of granted privileges and view the corresponding privilege
+tables.
+******************************************************************************************************
+
+
+mysql>
+mysql>
+mysql>
+mysql>
+mysql> show grants for User1@localhost \G;
+*************************** 1. row ***************************
+Grants for User1@localhost: GRANT USAGE ON *.* TO `User1`@`localhost`
+*************************** 2. row ***************************
+Grants for User1@localhost: GRANT CREATE ON `unik`.* TO `User1`@`localhost`
+*************************** 3. row ***************************
+Grants for User1@localhost: GRANT SELECT, DELETE ON `unik`.`phone number` TO `User1`@`localhost`
+3 rows in set (0.00 sec)
+
+ERROR:
+No query specified
+
+mysql> show grants for User2@localhost \G;
+*************************** 1. row ***************************
+Grants for User2@localhost: GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, RELOAD, SHUTDOWN, PROCESS, FILE, REFERENCES,INDEX, ALTER, SHOW DATABASES, SUPER, CREATE TEMPORARY TABLES, LOCK TABLES, EXECUTE, REPLICATION SLAVE, REPLICATION CLIENT, CREATE VIEW, SHOW VIEW, CREATE ROUTINE, ALTER ROUTINE, CREATE USER, EVENT, TRIGGER, CREATE TABLESPACE, CREATE ROLE, DROP ROLE ON *.* TO `User2`@`localhost`
+*************************** 2. row ***************************
+Grants for User2@localhost: GRANT APPLICATION_PASSWORD_ADMIN,AUDIT_ABORT_EXEMPT,AUDIT_ADMIN,AUTHENTICATION_POLICY_ADMIN,BACKUP_ADMIN,BINLOG_ADMIN,BINLOG_ENCRYPTION_ADMIN,CLONE_ADMIN,CONNECTION_ADMIN,ENCRYPTION_KEY_ADMIN,FIREWALL_EXEMPT,FLUSH_OPTIMIZER_COSTS,FLUSH_STATUS,FLUSH_TABLES,FLUSH_USER_RESOURCES,GROUP_REPLICATION_ADMIN,GROUP_REPLICATION_STREAM,INNODB_REDO_LOG_ARCHIVE,INNODB_REDO_LOG_ENABLE,PASSWORDLESS_USER_ADMIN,PERSIST_RO_VARIABLES_ADMIN,REPLICATION_APPLIER,REPLICATION_SLAVE_ADMIN,RESOURCE_GROUP_ADMIN,RESOURCE_GROUP_USER,ROLE_ADMIN,SENSITIVE_VARIABLES_OBSERVER,SERVICE_CONNECTION_ADMIN,SESSION_VARIABLES_ADMIN,SET_USER_ID,SHOW_ROUTINE,SYSTEM_USER,SYSTEM_VARIABLES_ADMIN,TABLE_ENCRYPTION_ADMIN,TELEMETRY_LOG_ADMIN,XA_RECOVER_ADMIN ON *.* TO `User2`@`localhost`
+*************************** 3. row ***************************
+Grants for User2@localhost: GRANT SELECT ON `unik`.* TO `User2`@`localhost` WITH GRANT OPTION
+3 rows in set (0.00 sec)
+
+ERROR:
+No query specified
+
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+
+
+******************************************************************************************************
+Global Privilege Level
+******************************************************************************************************
+
+mysql> select * from mysql.user \G;
+*************************** 1. row ***************************
+                    Host: localhost
+                    User: User1
+             Select_priv: N
+             Insert_priv: N
+             Update_priv: N
+             Delete_priv: N
+             Create_priv: N
+               Drop_priv: N
+             Reload_priv: N
+           Shutdown_priv: N
+            Process_priv: N
+               File_priv: N
+              Grant_priv: N
+         References_priv: N
+              Index_priv: N
+              Alter_priv: N
+            Show_db_priv: N
+              Super_priv: N
+   Create_tmp_table_priv: N
+        Lock_tables_priv: N
+            Execute_priv: N
+         Repl_slave_priv: N
+        Repl_client_priv: N
+        Create_view_priv: N
+          Show_view_priv: N
+     Create_routine_priv: N
+      Alter_routine_priv: N
+        Create_user_priv: N
+              Event_priv: N
+            Trigger_priv: N
+  Create_tablespace_priv: N
+                ssl_type:
+              ssl_cipher: 0x
+             x509_issuer: 0x
+            x509_subject: 0x
+           max_questions: 100
+             max_updates: 50
+         max_connections: 30
+    max_user_connections: 5
+                  plugin: caching_sha2_password
+   authentication_string: $A$005$w0     %QLUj&/DzT
+AJdz5fwIMJXIPfYqxWGfdEvhEzB0982jwg3iqHuOmk.
+        password_expired: N
+   password_last_changed: 2025-05-18 21:39:30
+       password_lifetime: NULL
+          account_locked: N
+        Create_role_priv: N
+          Drop_role_priv: N
+  Password_reuse_history: NULL
+     Password_reuse_time: NULL
+Password_require_current: NULL
+         User_attributes: NULL
+*************************** 2. row ***************************
+                    Host: localhost
+                    User: User2
+             Select_priv: Y
+             Insert_priv: Y
+             Update_priv: Y
+             Delete_priv: Y
+             Create_priv: Y
+               Drop_priv: Y
+             Reload_priv: Y
+           Shutdown_priv: Y
+            Process_priv: Y
+               File_priv: Y
+              Grant_priv: N
+         References_priv: Y
+              Index_priv: Y
+              Alter_priv: Y
+            Show_db_priv: Y
+              Super_priv: Y
+   Create_tmp_table_priv: Y
+        Lock_tables_priv: Y
+            Execute_priv: Y
+         Repl_slave_priv: Y
+        Repl_client_priv: Y
+        Create_view_priv: Y
+          Show_view_priv: Y
+     Create_routine_priv: Y
+      Alter_routine_priv: Y
+        Create_user_priv: Y
+              Event_priv: Y
+            Trigger_priv: Y
+  Create_tablespace_priv: Y
+                ssl_type:
+              ssl_cipher: 0x
+             x509_issuer: 0x
+            x509_subject: 0x
+           max_questions: 0
+             max_updates: 0
+         max_connections: 0
+    max_user_connections: 0
+                  plugin: caching_sha2_password
+   authentication_string: $A$005$y(Z-Uk%
+orFYGR+/
+        91XQfDYMWaZQjxWsPDC9kgNWrR.jChfagEQ9Y9bI3n8
+        password_expired: N
+   password_last_changed: 2025-05-18 22:03:22
+       password_lifetime: NULL
+          account_locked: N
+        Create_role_priv: Y
+          Drop_role_priv: Y
+  Password_reuse_history: NULL
+     Password_reuse_time: NULL
+Password_require_current: NULL
+         User_attributes: NULL
+*************************** 3. row ***************************
+                    Host: localhost
+                    User: mysql.infoschema
+             Select_priv: Y
+             Insert_priv: N
+             Update_priv: N
+             Delete_priv: N
+             Create_priv: N
+               Drop_priv: N
+             Reload_priv: N
+           Shutdown_priv: N
+            Process_priv: N
+               File_priv: N
+              Grant_priv: N
+         References_priv: N
+              Index_priv: N
+              Alter_priv: N
+            Show_db_priv: N
+              Super_priv: N
+   Create_tmp_table_priv: N
+        Lock_tables_priv: N
+            Execute_priv: N
+         Repl_slave_priv: N
+        Repl_client_priv: N
+        Create_view_priv: N
+          Show_view_priv: N
+     Create_routine_priv: N
+      Alter_routine_priv: N
+        Create_user_priv: N
+              Event_priv: N
+            Trigger_priv: N
+  Create_tablespace_priv: N
+                ssl_type:
+              ssl_cipher: 0x
+             x509_issuer: 0x
+            x509_subject: 0x
+           max_questions: 0
+             max_updates: 0
+         max_connections: 0
+    max_user_connections: 0
+                  plugin: caching_sha2_password
+   authentication_string: $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED
+        password_expired: N
+   password_last_changed: 2025-03-26 08:38:08
+       password_lifetime: NULL
+          account_locked: Y
+        Create_role_priv: N
+          Drop_role_priv: N
+  Password_reuse_history: NULL
+     Password_reuse_time: NULL
+Password_require_current: NULL
+         User_attributes: NULL
+*************************** 4. row ***************************
+                    Host: localhost
+                    User: mysql.session
+             Select_priv: N
+             Insert_priv: N
+             Update_priv: N
+             Delete_priv: N
+             Create_priv: N
+               Drop_priv: N
+             Reload_priv: N
+           Shutdown_priv: Y
+            Process_priv: N
+               File_priv: N
+              Grant_priv: N
+         References_priv: N
+              Index_priv: N
+              Alter_priv: N
+            Show_db_priv: N
+              Super_priv: Y
+   Create_tmp_table_priv: N
+        Lock_tables_priv: N
+            Execute_priv: N
+         Repl_slave_priv: N
+        Repl_client_priv: N
+        Create_view_priv: N
+          Show_view_priv: N
+     Create_routine_priv: N
+      Alter_routine_priv: N
+        Create_user_priv: N
+              Event_priv: N
+            Trigger_priv: N
+  Create_tablespace_priv: N
+                ssl_type:
+              ssl_cipher: 0x
+             x509_issuer: 0x
+            x509_subject: 0x
+           max_questions: 0
+             max_updates: 0
+         max_connections: 0
+    max_user_connections: 0
+                  plugin: caching_sha2_password
+   authentication_string: $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED
+        password_expired: N
+   password_last_changed: 2025-03-26 08:38:08
+       password_lifetime: NULL
+          account_locked: Y
+        Create_role_priv: N
+          Drop_role_priv: N
+  Password_reuse_history: NULL
+     Password_reuse_time: NULL
+Password_require_current: NULL
+         User_attributes: NULL
+*************************** 5. row ***************************
+                    Host: localhost
+                    User: mysql.sys
+             Select_priv: N
+             Insert_priv: N
+             Update_priv: N
+             Delete_priv: N
+             Create_priv: N
+               Drop_priv: N
+             Reload_priv: N
+           Shutdown_priv: N
+            Process_priv: N
+               File_priv: N
+              Grant_priv: N
+         References_priv: N
+              Index_priv: N
+              Alter_priv: N
+            Show_db_priv: N
+              Super_priv: N
+   Create_tmp_table_priv: N
+        Lock_tables_priv: N
+            Execute_priv: N
+         Repl_slave_priv: N
+        Repl_client_priv: N
+        Create_view_priv: N
+          Show_view_priv: N
+     Create_routine_priv: N
+      Alter_routine_priv: N
+        Create_user_priv: N
+              Event_priv: N
+            Trigger_priv: N
+  Create_tablespace_priv: N
+                ssl_type:
+              ssl_cipher: 0x
+             x509_issuer: 0x
+            x509_subject: 0x
+           max_questions: 0
+             max_updates: 0
+         max_connections: 0
+    max_user_connections: 0
+                  plugin: caching_sha2_password
+   authentication_string: $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED
+        password_expired: N
+   password_last_changed: 2025-03-26 08:38:08
+       password_lifetime: NULL
+          account_locked: Y
+        Create_role_priv: N
+          Drop_role_priv: N
+  Password_reuse_history: NULL
+     Password_reuse_time: NULL
+Password_require_current: NULL
+         User_attributes: NULL
+*************************** 6. row ***************************
+                    Host: localhost
+                    User: root
+             Select_priv: Y
+             Insert_priv: Y
+             Update_priv: Y
+             Delete_priv: Y
+             Create_priv: Y
+               Drop_priv: Y
+             Reload_priv: Y
+           Shutdown_priv: Y
+            Process_priv: Y
+               File_priv: Y
+              Grant_priv: Y
+         References_priv: Y
+              Index_priv: Y
+              Alter_priv: Y
+            Show_db_priv: Y
+              Super_priv: Y
+   Create_tmp_table_priv: Y
+        Lock_tables_priv: Y
+            Execute_priv: Y
+         Repl_slave_priv: Y
+        Repl_client_priv: Y
+        Create_view_priv: Y
+          Show_view_priv: Y
+     Create_routine_priv: Y
+      Alter_routine_priv: Y
+        Create_user_priv: Y
+              Event_priv: Y
+            Trigger_priv: Y
+  Create_tablespace_priv: Y
+                ssl_type:
+              ssl_cipher: 0x
+             x509_issuer: 0x
+            x509_subject: 0x
+           max_questions: 0
+             max_updates: 0
+         max_connections: 0
+    max_user_connections: 0
+                  plugin: caching_sha2_password
+   authentication_string: $A$005$c)/SvM%CV]f]n!1~yx6ssfVvqXPFOog53egPNLhknJBZssRKILc7njfTNi3
+        password_expired: N
+   password_last_changed: 2025-03-26 08:38:30
+       password_lifetime: NULL
+          account_locked: N
+        Create_role_priv: Y
+          Drop_role_priv: Y
+  Password_reuse_history: NULL
+     Password_reuse_time: NULL
+Password_require_current: NULL
+         User_attributes: NULL
+6 rows in set (0.00 sec)
+
+ERROR:
+No query specified
+
+******************************************************************************************************
+Database Privilege Level
+******************************************************************************************************
+
+mysql> select * from mysql.db \G;
+*************************** 1. row ***************************
+                 Host: localhost
+                   Db: unik
+                 User: User1
+          Select_priv: N
+          Insert_priv: N
+          Update_priv: N
+          Delete_priv: N
+          Create_priv: Y
+            Drop_priv: N
+           Grant_priv: N
+      References_priv: N
+           Index_priv: N
+           Alter_priv: N
+Create_tmp_table_priv: N
+     Lock_tables_priv: N
+     Create_view_priv: N
+       Show_view_priv: N
+  Create_routine_priv: N
+   Alter_routine_priv: N
+         Execute_priv: N
+           Event_priv: N
+         Trigger_priv: N
+*************************** 2. row ***************************
+                 Host: localhost
+                   Db: unik
+                 User: User2
+          Select_priv: Y
+          Insert_priv: N
+          Update_priv: N
+          Delete_priv: N
+          Create_priv: N
+            Drop_priv: N
+           Grant_priv: Y
+      References_priv: N
+           Index_priv: N
+           Alter_priv: N
+Create_tmp_table_priv: N
+     Lock_tables_priv: N
+     Create_view_priv: N
+       Show_view_priv: N
+  Create_routine_priv: N
+   Alter_routine_priv: N
+         Execute_priv: N
+           Event_priv: N
+         Trigger_priv: N
+*************************** 3. row ***************************
+                 Host: localhost
+                   Db: performance_schema
+                 User: mysql.session
+          Select_priv: Y
+          Insert_priv: N
+          Update_priv: N
+          Delete_priv: N
+          Create_priv: N
+            Drop_priv: N
+           Grant_priv: N
+      References_priv: N
+           Index_priv: N
+           Alter_priv: N
+Create_tmp_table_priv: N
+     Lock_tables_priv: N
+     Create_view_priv: N
+       Show_view_priv: N
+  Create_routine_priv: N
+   Alter_routine_priv: N
+         Execute_priv: N
+           Event_priv: N
+         Trigger_priv: N
+*************************** 4. row ***************************
+                 Host: localhost
+                   Db: sys
+                 User: mysql.sys
+          Select_priv: N
+          Insert_priv: N
+          Update_priv: N
+          Delete_priv: N
+          Create_priv: N
+            Drop_priv: N
+           Grant_priv: N
+      References_priv: N
+           Index_priv: N
+           Alter_priv: N
+Create_tmp_table_priv: N
+     Lock_tables_priv: N
+     Create_view_priv: N
+       Show_view_priv: N
+  Create_routine_priv: N
+   Alter_routine_priv: N
+         Execute_priv: N
+           Event_priv: N
+         Trigger_priv: Y
+4 rows in set (0.00 sec)
+
+ERROR:
+No query specified
+
+
+******************************************************************************************************
+Table Privilege Level
+******************************************************************************************************
+
+mysql> select * from mysql.tables_priv \G;
+*************************** 1. row ***************************
+       Host: localhost
+         Db: unik
+       User: User1
+ Table_name: phone number
+    Grantor: root@localhost
+  Timestamp: 2025-05-18 21:57:10
+ Table_priv: Select,Delete
+Column_priv:
+*************************** 2. row ***************************
+       Host: localhost
+         Db: mysql
+       User: mysql.session
+ Table_name: user
+    Grantor: boot@
+  Timestamp: 2025-03-26 08:38:08
+ Table_priv: Select
+Column_priv:
+*************************** 3. row ***************************
+       Host: localhost
+         Db: sys
+       User: mysql.sys
+ Table_name: sys_config
+    Grantor: root@localhost
+  Timestamp: 2025-03-26 08:38:08
+ Table_priv: Select
+Column_priv:
+3 rows in set (0.00 sec)
+
+ERROR:
+No query specified
+
+
+******************************************************************************************************
+Column Privilege Level
+******************************************************************************************************
+
+mysql> select * from mysql.columns_priv \G;
+Empty set (0.00 sec)
+
+ERROR:
+No query specified
+
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+
+******************************************************************************************************
+6. Delete User1 and User2 accounts.
+******************************************************************************************************
+
+mysql> revoke all on *.* from User2@localhost;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> show grants for User2@localhost;
++-------------------------------------------+
+| Grants for User2@localhost                |
++-------------------------------------------+
+| GRANT USAGE ON *.* TO `User2`@`localhost` |
++-------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> show grants for User1@localhost;
++----------------------------------------------------------------------+
+| Grants for User1@localhost                                           |
++----------------------------------------------------------------------+
+| GRANT USAGE ON *.* TO `User1`@`localhost`                            |
+| GRANT CREATE ON `unik`.* TO `User1`@`localhost`                      |
+| GRANT SELECT, DELETE ON `unik`.`phone number` TO `User1`@`localhost` |
++----------------------------------------------------------------------+
+3 rows in set (0.00 sec)
+
+mysql> drop user User1@localhost;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> drop user User2@localhost;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select user, host, authentication_string from mysql.user;
++------------------+-----------+------------------------------------------------------------------------+
+| user             | host      | authentication_string                                                  |
++------------------+-----------+------------------------------------------------------------------------+
+| mysql.infoschema | localhost | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED |
+| mysql.session    | localhost | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED |
+| mysql.sys        | localhost | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED |
+| root             | localhost | $A$005$c)/SvM%CV]f]n!1~yx6ssfVvqXPFOog53egPNLhknJBZssRKILc7njfTNi3 |
++------------------+-----------+------------------------------------------------------------------------+
+4 rows in set (0.00 sec)
+
+mysql>
